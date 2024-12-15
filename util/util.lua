@@ -10,7 +10,15 @@ function util.determiant(a,b,c,d,e,f,g,h,i)
 end
 
 function util.distance(point_A,point_B)
-    local d=(point_A.position.x-point_B.position.x)*(point_A.position.x-point_B.position.x)-(point_A.position.y-point_B.position.y)*(point_A.position.y-point_B.position.y)
+    local d=((point_A.position.x-point_B.position.x)*(point_A.position.x-point_B.position.x))+((point_A.position.y-point_B.position.y)*(point_A.position.y-point_B.position.y))
+   
+    return math.sqrt(d)
+end
+
+
+function util.distance2(point_A,point_B)
+    local d=((point_A.x-point_B.x)*(point_A.x-point_B.x))+((point_A.y-point_B.y)*(point_A.y-point_B.y))
+   
     return math.sqrt(d)
 end
 

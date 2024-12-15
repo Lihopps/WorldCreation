@@ -5,25 +5,30 @@ local util=require("util.util")
 
 local routes={}
 
-local function make_supertriangle()
+local function make_supertriangle(state)
     local offset=2
-    local dist=(50/math.cos(math.pi/3))+offset
-    local position=coord.polaire_to_cart(dist,0*120/360)
-    log(serpent.block(position))
+    local d=500
+    if state==1 then
+        d=1000
+    end
+
+    local dist=d--(d/math.cos(math.pi/3))+offset
+    local position=coord.polaire_to_cart(dist,0)
     local point_A={
         position=position,  --cartesian position in system
         name = "point_A",
     }
-    position=coord.polaire_to_cart(dist,1*120/360)
+    position=coord.polaire_to_cart(dist,2*math.pi/3)
     local point_B={
         position=position,  --cartesian position in system
         name = "point_B",
     }
-    position=coord.polaire_to_cart(dist,2*120/360)
+    position=coord.polaire_to_cart(dist,4*math.pi/3)
     local point_C={
         position=position,  --cartesian position in system
         name = "point_C",
     }
+    
     return {name=point_A.name.."-"..point_B.name.."-"..point_C.name,sommet={point_A,point_B,point_C},edge={{point_A,point_B},{point_B,point_C},{point_C,point_A}}}
 end
 
@@ -31,50 +36,49 @@ local function cercle_circonscrit(triangle)
     local pa=triangle.sommet[1]
     local pb=triangle.sommet[2]
     local pc=triangle.sommet[3]
+    
     local delta= util.determiant(pa.position.x,pa.position.y,1,pb.position.x,pb.position.y,1,pc.position.x,pc.position.y,1)
     local a=pa.position.x*pa.position.x+pa.position.y*pa.position.y
     local d=pb.position.x*pb.position.x+pb.position.y*pb.position.y
     local g=pc.position.x*pc.position.x+pc.position.y*pc.position.y
-    local x=(1/2*delta)*util.determiant(a,pa.position.y,1,d,pb.position.y,1,g,pc.position.y,1)
-    local y=-(1/2*delta)*util.determiant(a,pa.position.x,1,d,pb.position.x,1,g,pc.position.x,1)
+    local x=(1/(2*delta))*util.determiant(a,pa.position.y,1,d,pb.position.y,1,g,pc.position.y,1)
+    local y=-(1/(2*delta))*util.determiant(a,pa.position.x,1,d,pb.position.x,1,g,pc.position.x,1)
     local centre={x=x,y=y}
-    local rayon=(util.distance(pa,pb)+util.distance(pb,pc)+util.distance(pc,pa))/(2*delta)
+    
+    local rayon=(util.distance(pa,pb)*util.distance(pb,pc)*util.distance(pc,pa))/(2*delta)
+    --log(serpent.block(rayon))
+    --log(serpent.block(centre))
     return {position=centre,rayon=rayon}
 end
 
-function routes.triangulation(system)
-    local supertriangle=make_supertriangle()
+function routes.triangulation(system,state)
+    local supertriangle=make_supertriangle(state)
     local triangles={supertriangle}
-    log(serpent.block(supertriangle))
-    for _,sommet in pairs(system.children) do
+    local points={}
+    if state==0 then
+        points=system.children
+    elseif state==1 then
+        points=system
+        --log(serpent.block(points))
+    end
+    
+    for _,sommet in pairs(points) do
         if not sommet.moon then
             local badTriangles={}
-        
+            local polygon ={}
             for _,triangle in pairs(triangles) do
                 local cercle_data= cercle_circonscrit( triangle )
-                log(serpent.block(cercle_data))
+                --log(serpent.block(triangle))
+                --log(serpent.block(cercle_data))
+                --log(serpent.block(sommet))
                 if util.in_circle(sommet,cercle_data) then
                     table.insert(badTriangles,triangle)
+                    for _,edge in pairs(triangle.edge) do
+                        table.insert(polygon,edge)
+                    end
                 end
             end
-            log(serpent.block(badTriangles))
-            local polygon ={}
-            for _,triangle in pairs(badTriangles) do
-               for _,edge in pairs(triangle.edge) do
-                    for _,tri in pairs(badTriangles) do
-                        for _,ed in pairs(tri.edge) do
-                            if (edge[1].name==ed[1].name and edge[2].name==ed[2].name) or  (edge[1].name==ed[2].name and edge[2].name==ed[1].name) then
-                                goto shared
-                            end
-                        end
-                    end
-                    -- si on arrive ici c'est que pas shared
-                    table.insert(polygon,edge)
 
-                    ::shared::
-               end
-            end
-            log(serpent.block(badTriangles))
             for _,tri in pairs(badTriangles) do
                 for j=#triangles,1,-1 do
                     if tri.name==triangles[j].name then
@@ -82,9 +86,10 @@ function routes.triangulation(system)
                     end
                 end
             end
+            --log(serpent.block(polygon))
             for _,edge in pairs(polygon) do 
                 local triangle={
-                    sommet.name.."-"..edge[1].name.."-"..edge[2].name,
+                    name=sommet.name.."-"..edge[1].name.."-"..edge[2].name,
                     sommet={
                         sommet,edge[1],edge[2]
                     },
@@ -100,20 +105,15 @@ function routes.triangulation(system)
         end
 
     end
-    log(serpent.block(triangles))
-    for i=#triangles,1,-1 do
-        for _,edge in pairs(triangles[i].edge) do
-            for _,ed in pairs(supertriangle.edge) do
-                if (edge[1].name==ed[1].name and edge[2].name==ed[2].name) or  (edge[1].name==ed[2].name and edge[2].name==ed[1].name) then
-                    table.remove(triangles,i)
-                    goto pass
-                end
-            end
+    --log(serpent.block(triangles))
+    local final_triangles={}
+    for _,triangle in pairs(triangles) do
+        if not string.match(triangle.name, "point_") then
+            table.insert(final_triangles,triangle)
         end
-        ::pass::
     end
-    log(serpent.block(triangles))
-    return triangles
+    --log(serpent.block(final_triangles))
+    return final_triangles
 end
 
 function routes.make_final_routes(space_routes)
@@ -132,25 +132,41 @@ function routes.make_final_routes(space_routes)
     return final_routes
 end
 
-function routes.add_system_route(system)
-    local space_routes = routes.triangulation(system)
-    log(serpent.block(space_routes))
+function routes.create_system_route(system)
+    local space_routes = routes.triangulation(system,0)
     local final_space_route=routes.make_final_routes(space_routes)
-    log(serpent.block(final_space_route))
-    for _,edge in pairs(final_space_route) do
-        data:extend {{
-            type = "space-connection",  
-            name = edge[1].name.."-to-"..edge[2].name,  
-            subgroup = "planet-connections",  
-            icon = "__space-age__/graphics/icons/solar-system-edge.png",  
-            from = edge[1].name,  
-            to = edge[2].name,  
-            order = "h",  
-            length = settings.startup["space-connection-gleba-sye-nauvis-ne-length"].value or 40000,  
-            asteroid_spawn_definitions = asteroid_util.spawn_definitions(asteroid_util.gleba_aquilo)
-  }}
+    return final_space_route
+end
 
-    end
+-- function routes.add_system_route(system)
+--     for _,edge in pairs(final_space_route) do
+--         data:extend {{
+--             type = "space-connection",  
+--             name = edge[1].name.."-to-"..edge[2].name,  
+--             subgroup = "planet-connections",  
+--             icon = "__space-age__/graphics/icons/solar-system-edge.png",  
+--             from = edge[1].name,  
+--             to = edge[2].name,  
+--             order = "h",  
+--             length =  40000,  
+--             asteroid_spawn_definitions = asteroid_util.spawn_definitions(asteroid_util.gleba_aquilo)
+--         }}
+
+--     end
+-- end
+
+function routes.create_galaxy_routes(galaxy_objects)
+--galaxy_objects assuming il n'y a que des systems dedans
+  --log(serpent.block(galaxy_objects))
+    local tmp_galaxy_objects=table.deepcopy(galaxy_objects)
+    tmp_galaxy_objects["calidus"] = {name="solar-system",position={x=0,y=0},location={distance=0,angle=0}}
+    local galaxy_routes = routes.triangulation(galaxy_objects,1)
+    --log(serpent.block(galaxy_routes))
+    local final_galaxy_routes=routes.make_final_routes(galaxy_routes)
+    --log(serpent.block(final_galaxy_routes))
+    return final_galaxy_routes
+
+
 
 end
 
