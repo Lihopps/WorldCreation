@@ -63,6 +63,7 @@ function routes.triangulation(system,state)
     end
     
     for _,sommet in pairs(points) do
+        --log(serpent.block(sommet))
         if not sommet.moon then
             local badTriangles={}
             local polygon ={}
@@ -138,23 +139,6 @@ function routes.create_system_route(system)
     return final_space_route
 end
 
--- function routes.add_system_route(system)
---     for _,edge in pairs(final_space_route) do
---         data:extend {{
---             type = "space-connection",  
---             name = edge[1].name.."-to-"..edge[2].name,  
---             subgroup = "planet-connections",  
---             icon = "__space-age__/graphics/icons/solar-system-edge.png",  
---             from = edge[1].name,  
---             to = edge[2].name,  
---             order = "h",  
---             length =  40000,  
---             asteroid_spawn_definitions = asteroid_util.spawn_definitions(asteroid_util.gleba_aquilo)
---         }}
-
---     end
--- end
-
 function routes.create_galaxy_routes(galaxy_objects)
 --galaxy_objects assuming il n'y a que des systems dedans
   --log(serpent.block(galaxy_objects))
@@ -168,6 +152,18 @@ function routes.create_galaxy_routes(galaxy_objects)
 
 
 
+end
+
+function routes.asteroids_spawn(belt,planet_1,planet_2)
+    if belt then
+        --log(serpent.block(planet_1))
+        --log(serpent.block(planet_2))
+        if math.min(planet_1.orbit_distance,planet_2.orbit_distance)<4.5 and math.max(planet_1.orbit_distance,planet_2.orbit_distance)>4.5 then
+            log("routes in asteroids")
+            return asteroid_util.spawn_definitions(asteroid_util.gleba_aquilo)
+        end
+    end
+    return asteroid_util.spawn_definitions(asteroid_util.gleba_aquilo)
 end
 
 return routes
