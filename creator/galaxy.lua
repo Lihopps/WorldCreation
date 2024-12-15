@@ -20,15 +20,15 @@ local function add_system_to_game(system,debloque)
       end
 end
 
-local function create_galaxy_objects(galaxy_objects,max_system, gen)
+local function create_galaxy_objects(galaxy_objects,max_system, gen,global_map_gen)
   local points = coord.create_system_location(max_system, gen)
   for i = 1, #points do
     local location = {
-      distance = points[i].distance, --gen:random(120, 200)
-      angle = points[i].angle,       --gen:random()
+      distance = points[i].distance, 
+      angle = points[i].angle,     
     }
     --log(serpent.block(location))
-    system.create_system(galaxy_objects,location,gen)
+    system.create_system(galaxy_objects,location,gen,global_map_gen)
   end
   galaxy_objects["solar-system"] = { name = "solar-system", localised_name = "solar-system", position = { x = 0, y = 0 }, location = { distance = 0, angle = 0 }, children = {} }
 end
@@ -192,11 +192,11 @@ end
 
 local galaxy={}
 
-function galaxy.create_galaxy(seed)
+function galaxy.create_galaxy(seed,global_map_gen)
     local gen = mwc(seed)
     local max_system = gen:random(2, 10)
     local galaxy_objects={}
-    create_galaxy_objects(galaxy_objects,max_system,gen)
+    create_galaxy_objects(galaxy_objects,max_system,gen,global_map_gen)
     system.create_routes_in_system(galaxy_objects)
     create_routes_between_system(galaxy_objects,gen)
     create_routes_for_edge_in_system(galaxy_objects)
