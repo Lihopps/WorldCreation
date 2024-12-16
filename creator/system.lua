@@ -7,6 +7,8 @@
 --orbit_4=25.5
 --orbit_5=39.5
 --orbit_6~=44.25
+local asteroid=require("creator.asteroids")
+
 
 local asteroid_util = require("__space-age__.prototypes.planet.asteroid-spawn-definitions")
 
