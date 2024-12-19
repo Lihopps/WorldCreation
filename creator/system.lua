@@ -7,7 +7,7 @@
 --orbit_4=25.5
 --orbit_5=39.5
 --orbit_6~=44.25
-local asteroid=require("creator.asteroids")
+local asteroid = require("creator.asteroids")
 
 
 local asteroid_util = require("__space-age__.prototypes.planet.asteroid-spawn-definitions")
@@ -15,10 +15,13 @@ local asteroid_util = require("__space-age__.prototypes.planet.asteroid-spawn-de
 local coord = require("util.coordonnee")
 local backers = require("__WorldCreation__.backers")
 local routes = require("creator.routes")
+local corps = require("creator.planet")
+local star = require("creator.star")
+local util = require("util.util")
 
 local orbit = { 10.25, 14.75, 19.25, 25.5, 39.5 }
 local planet_density = { 0.25, 0.5, 0.8 }
-local moon_density = { 0, 0.10, 0.25 }
+
 local asteroids_belt_distance = 31.5 -- 4.5 orbit
 
 
@@ -32,9 +35,6 @@ function systeme.make_corps(parent_name, parent_location, distance_from_parent, 
     elseif type == "edge" then
         orbit_distance = 10
         distance_from_parent = 50
-    elseif type == "moon" then
-        orbit_distance = distance_from_parent
-        distance_from_parent = 2
     else
         orbit_distance = distance_from_parent
         distance_from_parent = orbit[distance_from_parent]
@@ -51,91 +51,10 @@ function systeme.make_corps(parent_name, parent_location, distance_from_parent, 
     local distance = math.sqrt(cart_pos.x * cart_pos.x + cart_pos.y * cart_pos.y)
     local n_angle = coord.angle_convertf(coord.get_angle_from_cart(cart_pos))
     if type == "planet" then
-        local name = backers[gen:random(#backers)]
-        local corps = {
-            local_distance = distance_from_parent,
-            local_angle = angle,
-            position = position, --cartesian position depuis le centre du graph, avant décalge dans le system
-            orbit_distance = orbit_distance,
-            children = {},
-
-            type = "planet",
-            name = "lihop-planet-" .. name,
-            localised_name = name,
-            draw_orbit = false,
-            distance = distance,
-            orientation = n_angle,
-
-
-            icon = "__space-age__/graphics/icons/vulcanus.png",
-            starmap_icon = "__space-age__/graphics/icons/starmap-planet-vulcanus.png",
-            starmap_icon_size = 512,
-            magnitude = 1,
-            gravity_pull = 3.7,
-            asteroid_spawn_definitions = asteroid_util.spawn_definitions(asteroid_util.nauvis_vulcanus, 0.9),
-            --map_gen_settings = data.raw.planet.vulcanus.map_gen_settings,
-            -- surface_properties = {
-            --   -- Mercury (水星)
-            --   ["day-night-cycle"] = 58.7 * (24 * hour),
-            --   ["magnetic-field"] = 1,
-            --   ["solar-power"] = 500,
-            --   pressure = 0,
-            --   gravity = 3.7,
-            --}
-        }
-
-        --ici on peut creer une moon si besoin
-        if gen:random() < moon_density[gen:random(1, 3)] then
-            --log(serpent.block(galaxy_objects[parent_name]))
-            local moon = systeme.make_corps(corps.name, { distance = distance, angle = n_angle }, 5, gen:random(), "moon",
-                0, gen)
-            table.insert(corps.children, moon)
-            local route = {
-                type = "space-connection",
-                name = corps.name .. "-to-" .. moon.name,
-                subgroup = "planet-connections",
-                order = "h",
-                from = corps.name,
-                to = moon.name,
-                length = 5000,
-                asteroid_spawn_definitions = asteroid_util.spawn_definitions(asteroid_util.gleba_aquilo)
-            }
-            table.insert(corps.children, route)
-        end
-        return corps
-    elseif type == "moon" then
-        local name = backers[gen:random(#backers)]
-        local moon = {
-            local_distance = distance_from_parent,
-            local_angle = angle,
-            position = position, --cartesian position depuis le centre du graph, avant décalge dans le system
-            orbit_distance = orbit_distance,
-            moon = true,
-
-            type = "planet",
-            name = "lihop-moon-" .. name,
-            localised_name = name,
-            draw_orbit = false,
-            distance = distance,
-            orientation = n_angle,
-            
-            icon = "__space-age__/graphics/icons/vulcanus.png",
-            starmap_icon = "__space-age__/graphics/icons/starmap-planet-vulcanus.png",
-            starmap_icon_size = 512,
-            magnitude = 0.2,
-            gravity_pull = 3.7,
-            asteroid_spawn_definitions = asteroid_util.spawn_definitions(asteroid_util.nauvis_vulcanus, 0.9),
-            --map_gen_settings = data.raw.planet.vulcanus.map_gen_settings,
-            -- surface_properties = {
-            --   -- Mercury (水星)
-            --   ["day-night-cycle"] = 58.7 * (24 * hour),
-            --   ["magnetic-field"] = 1,
-            --   ["solar-power"] = 500,
-            --   pressure = 0,
-            --   gravity = 3.7,
-            --}
-        }
-        return moon
+        local planet = corps.make_planet(parent_name,backers, gen, distance_from_parent, angle, position, orbit_distance, distance, n_angle)
+        planet.subgroup=parent_name
+        planet.order="[a]"..planet.name
+        return planet
     elseif type == "asteroids_belt" then
         local name = backers[gen:random(#backers)]
         local belt = {
@@ -154,6 +73,8 @@ function systeme.make_corps(parent_name, parent_location, distance_from_parent, 
             distance = distance,
             orientation = n_angle,
             fly_condition = true,
+            subgroup=parent_name,
+            order="[b]",
             magnitude = 1,
             gravity_pull = 3.7,
             asteroid_spawn_definitions = asteroid_util.spawn_definitions(asteroid_util.nauvis_vulcanus, 0.9),
@@ -170,11 +91,12 @@ function systeme.make_corps(parent_name, parent_location, distance_from_parent, 
             name = "lihop-system-" .. parent_name .. "-edge",
             localised_name = parent_name .. "-edge",
             icon = "__space-age__/graphics/icons/solar-system-edge.png",
-            order = "f[solar-system-edge]",
-            subgroup = "planets",
+            order = "[c]",
+            subgroup = "lihop-system-"..util.split(parent_name,"-")[1],
             draw_orbit = false,
             gravity_pull = -10,
             distance = distance,
+
             orientation = n_angle,
             magnitude = 1.0,
             label_orientation = 0.15,
@@ -188,20 +110,19 @@ end
 function systeme.create_routes_in_system(galaxy_objects)
     --add routes in system
     for name, system in pairs(galaxy_objects) do
-        if name ~= "galaxy_routes" and name ~= "solar-system" then
-            if #system.children == 2 then
-                local asteroid_spawn_definitions = routes.asteroids_spawn(system.belt, system.children[1],
-                    system.children[2])
+        if name ~= "galaxy_routes" and name ~= "Calidus" then
+            if #system.children == 3 then
+                local asteroid_spawn_definitions = routes.asteroids_spawn(system.belt, system.children[2],
+                    system.children[3])
                 local route = {
                     type = "space-connection",
-                    name = system.children[1].name .. "-to-" .. system.children[2].name,
+                    name = system.children[2].name .. "-to-" .. system.children[3].name,
                     subgroup = "planet-connections",
-                    from = system.children[1].name,
-                    to = system.children[2].name,
+                    from = system.children[2].name,
+                    to = system.children[3].name,
                     order = "h",
                     length = 40000,
-                    asteroid_spawn_definitions =
-                    asteroid_spawn_definitions                      --asteroid_util.spawn_definitions(asteroid_util.gleba_aquilo)
+                    asteroid_spawn_definitions =asteroid_spawn_definitions 
                 }
                 table.insert(system.children, route)
             else
@@ -217,41 +138,75 @@ function systeme.create_routes_in_system(galaxy_objects)
                         to = edge[2].name,
                         order = "h",
                         length = 40000,
-                        asteroid_spawn_definitions =
-                        asteroid_spawn_definitions                  --asteroid_util.spawn_definitions(asteroid_util.gleba_aquilo)
+                        asteroid_spawn_definitions =asteroid_spawn_definitions
                     }
                     table.insert(system.children, route)
                 end
             end
+
+            --add space-connection for star
+            local nearest_planet = nil
+            local distance = 50
+            for _, planet in pairs(system.children) do
+                if (not planet.moon and planet.type == "planet") or (planet.type == "space-location" and string.find(planet.name, "asteroids_belt")) then
+                    if planet.local_distance < distance then
+                        nearest_planet = planet.name
+                        distance = planet.local_distance
+                    end
+                end
+            end
+            local star = "lihop-star-" .. system.localised_name
+            local route = {
+                type = "space-connection",
+                name = star .. "-to-" .. nearest_planet,
+                subgroup = "planet-connections",
+                from = star,
+                to = nearest_planet,
+                order = "h",
+                length = 20000,
+                asteroid_spawn_definitions =asteroid_spawn_definitions --asteroid_util.spawn_definitions(asteroid_util.gleba_aquilo)
+            }
+            table.insert(system.children, route)
         end
     end
 end
 
-function systeme.create_system(galaxy_objects, location, gen, global_map_gen)
+function systeme.create_system(number,galaxy_objects, location, gen, global_map_gen)
     local name = backers[gen:random(#backers)]
+    
     local system = {
         name = "lihop-system-" .. name,
         localised_name = name,
         density = gen:random(3),
         location = location,
         position = coord.polaire_to_cart(location.distance, coord.angle_convert(location.angle)),
+        star_temperature = gen:random(100, 300),
         children = {}
     }
-
+    data:extend({
+        {
+        type = "item-subgroup",
+        name = system.name,
+        group = "planets",
+        order = tostring(number),
+        }
+    })
     --log(serpent.block(system))
     --sprite de l'etoile
-    table.insert(data.raw["utility-sprites"]["default"]["starmap_star"].layers, {
-        filename = "__core__/graphics/icons/starmap-star.png",
-        size = 512,
-        scale = gen:random(),
-        shift = coord.position_to_layer(location.distance, location.angle),
-    })
+    -- table.insert(data.raw["utility-sprites"]["default"]["starmap_star"].layers, {
+    --     filename = "__core__/graphics/icons/starmap-star.png",
+    --     size = 512,
+    --     scale = gen:random(),
+    --     shift = coord.position_to_layer(location.distance, location.angle),
+    -- })
+    table.insert(system.children, star.make_star(system))
+
+
 
     --add coprs (planet/moon)
     for i = 1, #orbit do
         if gen:random() < planet_density[system.density] then
-            table.insert(system.children,
-                systeme.make_corps(system.name, location, i, gen:random(), "planet", system.density, gen))
+            table.insert(system.children,systeme.make_corps(system.name, location, i, gen:random(), "planet", system.density, gen))
             --sprite pour l'orbit
             table.insert(data.raw["utility-sprites"]["default"]["starmap_star"].layers, {
                 filename = "__WorldCreation__/graphics/icons/starmap_orbit_" .. i .. ".png",

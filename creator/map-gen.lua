@@ -6,6 +6,7 @@ local blacklist={
     gleba=true,
     fulgora=true,
     aquilo=true,
+    ["space-location-unknown"]=true,
     ["solar-system-edge"]=true,
     ["shattered-planet"]=true,
     ["nauvis-vulcanus"]=true,

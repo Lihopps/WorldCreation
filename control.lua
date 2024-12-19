@@ -24,3 +24,22 @@ script.on_event({
 		test.test()
 	end
 end)
+
+
+-- script.on_event({
+-- 	defines.events.on_space_platform_changed_state,
+	
+-- }, function(e)
+-- 	if e.platform.state==defines.space_platform_state.waiting_at_station then
+-- 		if e.platform.space_location then
+-- 			local space_l = e.platform.space_location
+-- 			if string.find(space_l.name,"edge") then
+-- 				rendering.draw_animation{
+-- 					surface =e.platform.surface,
+-- 					animation="test",
+-- 					target=e.platform.hub,
+-- 				}
+-- 			end
+-- 		end
+-- 	end
+-- end)

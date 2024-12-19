@@ -64,7 +64,7 @@ function routes.triangulation(system,state)
     
     for _,sommet in pairs(points) do
         --log(serpent.block(sommet))
-        if not sommet.moon then
+        if not sommet.is_not_in_route then
             local badTriangles={}
             local polygon ={}
             for _,triangle in pairs(triangles) do

@@ -4,36 +4,51 @@ local asteroid_util = require("__space-age__.prototypes.planet.asteroid-spawn-de
 local coord = require("util.coordonnee")
 local system = require("creator.system")
 local routes = require("creator.routes")
+local star = require("creator.star")
 
-local function add_system_to_game(system,debloque)
+local function add_system_to_game(system, debloque)
   for _, object in pairs(system.children) do
-        data:extend { object }
-        if object.type == "planet" or object.type == "space-location" then
-          table.insert(debloque, {
-            type = "unlock-space-location",
-            space_location = object.name
-          })
-        end
-        if object.type=="planet" and not object.moon and #object.children>0 then
-          add_system_to_game(object,debloque)
-        end
-      end
+    data:extend { object }
+    if object.type == "planet" or object.type == "space-location" then
+      table.insert(debloque, {
+        type = "unlock-space-location",
+        space_location = object.name
+      })
+    end
+    if object.type == "planet" and not object.moon and #object.children > 0 then
+      add_system_to_game(object, debloque)
+    end
+  end
 end
 
-local function create_galaxy_objects(galaxy_objects,max_system, gen,global_map_gen)
+local function create_galaxy_objects(galaxy_objects, max_system, gen, global_map_gen)
   local points = coord.create_system_location(max_system, gen)
   for i = 1, #points do
     local location = {
-      distance = points[i].distance, 
-      angle = points[i].angle,     
+      distance = points[i].distance,
+      angle = points[i].angle,
     }
     --log(serpent.block(location))
-    system.create_system(galaxy_objects,location,gen,global_map_gen)
+    system.create_system(i,galaxy_objects, location, gen, global_map_gen)
   end
-  galaxy_objects["solar-system"] = { name = "solar-system", localised_name = "solar-system", position = { x = 0, y = 0 }, location = { distance = 0, angle = 0 }, children = {} }
+
+  --makeup calidus system (default)
+  galaxy_objects["Calidus"] = { name = "Calidus", localised_name = "Calidus", position = { x = 0, y = 0 }, location = { distance = 0, angle = 0 }, children = {}, star_temperature = 140 }
+  table.insert(galaxy_objects["Calidus"].children, star.make_star(galaxy_objects["Calidus"]))
+  table.insert(galaxy_objects["Calidus"].children,
+    {
+      type = "space-connection",
+      name = "lihop-star-Calidus" .. "-to-" .. "vulcanus",
+      subgroup = "planet-connections",
+      from = "lihop-star-Calidus",
+      to = "vulcanus",
+      order = "h",
+      length = 20000,
+      asteroid_spawn_definitions =nil
+    })
 end
 
-local function create_and_add_system_edge_from_route(edge,galaxy_objects,gen)
+local function create_and_add_system_edge_from_route(edge, galaxy_objects, gen)
   --edge  50 de distance
   --log(serpent.block(edge))
   local system_1 = galaxy_objects[edge[1].name]
@@ -52,7 +67,8 @@ local function create_and_add_system_edge_from_route(edge,galaxy_objects,gen)
   local angle = coord.angle_convertf(angle_b)
 
   table.insert(galaxy_objects[edge[1].name].children,
-    system.make_corps(system_1.localised_name .. "-to-" .. system_2.localised_name, system_1.location, 50, angle, "edge",0,gen))
+    system.make_corps(system_1.localised_name .. "-to-" .. system_2.localised_name, system_1.location, 50, angle, "edge",
+      0, gen))
   table.insert(data.raw["utility-sprites"]["default"]["starmap_star"].layers, {
     filename = "__WorldCreation__/graphics/icons/starmap_edge_1.png",
     size = 4096,
@@ -62,7 +78,8 @@ local function create_and_add_system_edge_from_route(edge,galaxy_objects,gen)
 
   angle = coord.angle_convertf(angle_b + math.pi)
   table.insert(galaxy_objects[edge[2].name].children,
-    system.make_corps(system_2.localised_name .. "-to-" .. system_1.localised_name, system_2.location, 50, angle, "edge",0,gen))
+    system.make_corps(system_2.localised_name .. "-to-" .. system_1.localised_name, system_2.location, 50, angle, "edge",
+      0, gen))
   table.insert(data.raw["utility-sprites"]["default"]["starmap_star"].layers, {
     filename = "__WorldCreation__/graphics/icons/starmap_edge_1.png",
     size = 4096,
@@ -91,12 +108,12 @@ local function create_and_add_system_edge_from_route(edge,galaxy_objects,gen)
 end
 
 
-local function create_routes_between_system(galaxy_objects,gen)
+local function create_routes_between_system(galaxy_objects, gen)
   local galaxy_routes = routes.create_galaxy_routes(galaxy_objects)
   galaxy_objects["galaxy_routes"] = {}
   for _, edge in pairs(galaxy_routes) do
     --add les deux edges et ajoute la route
-    create_and_add_system_edge_from_route(edge,galaxy_objects,gen)
+    create_and_add_system_edge_from_route(edge, galaxy_objects, gen)
   end
 end
 
@@ -105,7 +122,7 @@ local function create_routes_for_edge_in_system(galaxy_objects)
     if name ~= "galaxy_routes" then
       for _, child in pairs(system.children) do
         if child.type == "space-location" and string.find(child.name, "edge") then
-          if name == "solar-system" then -- on creer les edges sur Aquilo
+          if name == "Calidus" then -- on creer les edges sur Aquilo
             local route = {
               type = "space-connection",
               name = "aquilo" .. "-to-" .. child.name,
@@ -123,7 +140,7 @@ local function create_routes_for_edge_in_system(galaxy_objects)
             local distance = 0
             local planet_name = ""
             for _, planet in pairs(system.children) do
-              if (not planet.moon and planet.type == "planet") or (planet.type=="space-location" and string.find(planet.name,"asteroids_belt")) then
+              if (not planet.moon and planet.type == "planet") or (planet.type == "space-location" and string.find(planet.name, "asteroids_belt")) then
                 if planet.local_distance > distance then
                   planet_name = planet.name
                   distance = planet.local_distance
@@ -151,7 +168,7 @@ local function create_routes_for_edge_in_system(galaxy_objects)
   end
 end
 
-local function add_galaxy_to_game(galaxy_objects,debloque)
+local function add_galaxy_to_game(galaxy_objects, debloque)
   --add planet and all object
   for name, system in pairs(galaxy_objects) do
     --log(name)
@@ -160,49 +177,48 @@ local function add_galaxy_to_game(galaxy_objects,debloque)
         data:extend { route }
       end
     else
-      add_system_to_game(system,debloque)
+      add_system_to_game(system, debloque)
     end
   end
 
-     data:extend {
-  {
-    type = "technology",
-    name = "planet-discovery-lihop",
-    icons = util.technology_icon_constant_planet("__space-age__/graphics/technology/vulcanus.png"),
-    icon_size = 256,
-    essential = true,
-    effects = debloque,
-    prerequisites = { "space-platform-thruster" },
-    unit =
+  data:extend {
     {
-      count = 1000,
-      ingredients =
+      type = "technology",
+      name = "planet-discovery-lihop",
+      icons = util.technology_icon_constant_planet("__space-age__/graphics/technology/vulcanus.png"),
+      icon_size = 256,
+      essential = true,
+      effects = debloque,
+      prerequisites = { "space-platform-thruster" },
+      unit =
       {
-        { "automation-science-pack", 1 },
-        { "logistic-science-pack",   1 },
-        { "chemical-science-pack",   1 },
-        { "space-science-pack",      1 }
-      },
-      time = 60
-    }
-  },
-}
-
+        count = 1000,
+        ingredients =
+        {
+          { "automation-science-pack", 1 },
+          { "logistic-science-pack",   1 },
+          { "chemical-science-pack",   1 },
+          { "space-science-pack",      1 }
+        },
+        time = 60
+      }
+    },
+  }
 end
 
-local galaxy={}
+local galaxy = {}
 
-function galaxy.create_galaxy(seed,global_map_gen)
-    local gen = mwc(seed)
-    local max_system = gen:random(2, 10)
-    local galaxy_objects={}
-    create_galaxy_objects(galaxy_objects,max_system,gen,global_map_gen)
-    system.create_routes_in_system(galaxy_objects)
-    create_routes_between_system(galaxy_objects,gen)
-    create_routes_for_edge_in_system(galaxy_objects)
-    
-    local debloque={}
-    add_galaxy_to_game(galaxy_objects,debloque)
+function galaxy.create_galaxy(seed, global_map_gen)
+  local gen = mwc(seed)
+  local max_system = gen:random(2, 10)
+  local galaxy_objects = {}
+  create_galaxy_objects(galaxy_objects, max_system, gen, global_map_gen)
+  system.create_routes_in_system(galaxy_objects)
+  create_routes_between_system(galaxy_objects, gen)
+  create_routes_for_edge_in_system(galaxy_objects)
+
+  local debloque = {}
+  add_galaxy_to_game(galaxy_objects, debloque)
 end
 
 return galaxy
