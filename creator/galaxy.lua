@@ -5,6 +5,7 @@ local coord = require("util.coordonnee")
 local system = require("creator.system")
 local routes = require("creator.routes")
 local star = require("creator.star")
+local update_calidus=require("creator.update-calidus-system")
 
 local function add_system_to_game(system, debloque)
   for _, object in pairs(system.children) do
@@ -33,19 +34,8 @@ local function create_galaxy_objects(galaxy_objects, max_system, gen, global_map
   end
 
   --makeup calidus system (default)
-  galaxy_objects["Calidus"] = { name = "Calidus", localised_name = "Calidus", position = { x = 0, y = 0 }, location = { distance = 0, angle = 0 }, children = {}, star_temperature = 140 }
-  table.insert(galaxy_objects["Calidus"].children, star.make_star(galaxy_objects["Calidus"]))
-  table.insert(galaxy_objects["Calidus"].children,
-    {
-      type = "space-connection",
-      name = "lihop-star-Calidus" .. "-to-" .. "vulcanus",
-      subgroup = "planet-connections",
-      from = "lihop-star-Calidus",
-      to = "vulcanus",
-      order = "h",
-      length = 20000,
-      asteroid_spawn_definitions =nil
-    })
+  update_calidus.update(galaxy_objects)
+  
 end
 
 local function create_and_add_system_edge_from_route(edge, galaxy_objects, gen)
@@ -67,7 +57,7 @@ local function create_and_add_system_edge_from_route(edge, galaxy_objects, gen)
   local angle = coord.angle_convertf(angle_b)
 
   table.insert(galaxy_objects[edge[1].name].children,
-    system.make_corps(system_1.localised_name .. "-to-" .. system_2.localised_name, system_1.location, 50, angle, "edge",
+    system.make_corps(nil,nil,system_1.localised_name .. "-to-" .. system_2.localised_name, system_1.location, 50, angle, "edge",
       0, gen))
   table.insert(data.raw["utility-sprites"]["default"]["starmap_star"].layers, {
     filename = "__WorldCreation__/graphics/icons/starmap_edge_1.png",
@@ -78,7 +68,7 @@ local function create_and_add_system_edge_from_route(edge, galaxy_objects, gen)
 
   angle = coord.angle_convertf(angle_b + math.pi)
   table.insert(galaxy_objects[edge[2].name].children,
-    system.make_corps(system_2.localised_name .. "-to-" .. system_1.localised_name, system_2.location, 50, angle, "edge",
+    system.make_corps(nil,nil,system_2.localised_name .. "-to-" .. system_1.localised_name, system_2.location, 50, angle, "edge",
       0, gen))
   table.insert(data.raw["utility-sprites"]["default"]["starmap_star"].layers, {
     filename = "__WorldCreation__/graphics/icons/starmap_edge_1.png",
@@ -90,9 +80,8 @@ local function create_and_add_system_edge_from_route(edge, galaxy_objects, gen)
   local route = {
     type = "space-connection",
     name = system_1.localised_name .. "-to-" .. system_2.localised_name,
-    subgroup = "planet-connections",
-    icon = "__space-age__/graphics/icons/solar-system-edge.png",
-    order = "h",
+    subgroup = system.name,
+    order = "[d]",
     length = 100000,
     asteroid_spawn_definitions = asteroid_util.spawn_definitions(asteroid_util.gleba_aquilo)
   }
@@ -122,15 +111,14 @@ local function create_routes_for_edge_in_system(galaxy_objects)
     if name ~= "galaxy_routes" then
       for _, child in pairs(system.children) do
         if child.type == "space-location" and string.find(child.name, "edge") then
-          if name == "Calidus" then -- on creer les edges sur Aquilo
+          if name == "lihop-system-Calidus" then -- on creer les edges sur Aquilo
             local route = {
               type = "space-connection",
               name = "aquilo" .. "-to-" .. child.name,
-              subgroup = "planet-connections",
-              icon = "__space-age__/graphics/icons/solar-system-edge.png",
+              subgroup = "lihop-system-Calidus",
               from = "aquilo",
               to = child.name,
-              order = "h",
+              order = "[d]",
               length = 40000,
               asteroid_spawn_definitions = asteroid_util.spawn_definitions(asteroid_util.gleba_aquilo)
             }
@@ -151,11 +139,10 @@ local function create_routes_for_edge_in_system(galaxy_objects)
             local route = {
               type = "space-connection",
               name = planet_name .. "-to-" .. child.name,
-              subgroup = "planet-connections",
-              icon = "__space-age__/graphics/icons/solar-system-edge.png",
+              subgroup = system.name,
               from = planet_name,
               to = child.name,
-              order = "h",
+              order = "[d]",
               length = 40000,
               asteroid_spawn_definitions = asteroid_util.spawn_definitions(asteroid_util.gleba_aquilo)
             }
@@ -209,8 +196,9 @@ end
 local galaxy = {}
 
 function galaxy.create_galaxy(seed, global_map_gen)
+  
   local gen = mwc(seed)
-  local max_system = gen:random(2, 10)
+  local max_system = gen:random(5, 15)
   local galaxy_objects = {}
   create_galaxy_objects(galaxy_objects, max_system, gen, global_map_gen)
   system.create_routes_in_system(galaxy_objects)

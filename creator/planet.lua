@@ -1,13 +1,22 @@
 local asteroid_util = require("__space-age__.prototypes.planet.asteroid-spawn-definitions")
 
 local moon=require("creator.moon")
+local map_gen=require("creator.map-gen")
+local util=require("util.util")
 
 local moon_density = { 0, 0.10, 0.25 }
+local robot_cons={1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,3,3,3,4,4,5}
 
 local corps = {}
 
-function corps.make_planet(system_name,backers,gen,distance_from_parent,angle,position,orbit_distance,distance,n_angle)
+function corps.make_planet(global_map_gen,system,system_name,backers,gen,distance_from_parent,angle,position,orbit_distance,distance,n_angle)
     local name = backers[gen:random(#backers)]
+    local name_gen=map_gen.get_planet_type(global_map_gen,system,distance_from_parent,gen)--"vulcanus"
+    local robot_comsuption=robot_cons[gen:random(1,#robot_cons)]
+    local pressure=gen:random(500,5000)
+    local magnetic_field=gen:random(5,100)
+    local gravity=pressure*robot_comsuption/100
+    local magnitude=util.map(gravity,5,250,0.95,1.5)
     local planet = {
         local_distance = distance_from_parent,
         local_angle = angle,
@@ -23,22 +32,24 @@ function corps.make_planet(system_name,backers,gen,distance_from_parent,angle,po
         orientation = n_angle,
 
 
-        icon = "__space-age__/graphics/icons/vulcanus.png",
-        starmap_icon = "__space-age__/graphics/icons/starmap-planet-vulcanus.png",
-        starmap_icon_size = 512,
-        magnitude = 1,
-        gravity_pull = 3.7,
-        solar_power_in_space=100,
+        icon = global_map_gen.graphics[name_gen][gen:random(1,#global_map_gen.graphics[name_gen])].icon or global_map_gen.planet[name_gen].icon,
+        starmap_icon = global_map_gen.graphics[name_gen][gen:random(1,#global_map_gen.graphics[name_gen])].starmap_icon or global_map_gen.planet[name_gen].starmap_icon,
+        starmap_icon_size = global_map_gen.graphics[name_gen][gen:random(1,#global_map_gen.graphics[name_gen])].starmap_icon_size or global_map_gen.planet[name_gen].starmap_icon_size,
+        magnitude = magnitude,
+        gravity_pull = 10*magnitude,
+        solar_power_in_space=map_gen.get_solar_power_in_space(system,distance_from_parent),
         asteroid_spawn_definitions = asteroid_util.spawn_definitions(asteroid_util.nauvis_vulcanus, 0.9),
         
         
-        map_gen_settings = data.raw.planet.vulcanus.map_gen_settings,
+        map_gen_settings = data.raw.planet[name_gen].map_gen_settings,
         surface_properties = {
           ["day-night-cycle"] = 58.7 * (24 * hour),
-          ["magnetic-field"] = 1,
-          ["solar-power"] = 500,
-          pressure = 0,
-          gravity = 3.7,
+          ["solar-power"] = map_gen.get_solar_power_surface(system,distance_from_parent,gen),
+          ["magnetic-field"] = magnetic_field,
+          size_surface=map_gen.get_size_from_planet_magnitude(magnitude),
+          pressure = pressure,--4000
+          gravity = gravity,--40     => 1
+          --robot comsuption = 100*gravity/(pression)  gravity=pression*rc/100  
         }
     }
 
@@ -54,8 +65,8 @@ function corps.make_planet(system_name,backers,gen,distance_from_parent,angle,po
         local route = {
             type = "space-connection",
             name = planet.name .. "-to-" .. planet_moon.name,
-            subgroup = "planet-connections",
-            order = "h",
+            subgroup = system_name,
+            order = "[d]",
             from = planet.name,
             to = planet_moon.name,
             length = 5000,

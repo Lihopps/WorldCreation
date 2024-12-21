@@ -44,7 +44,7 @@ function corps.make_moon(system_name,parent_name, parent_location, distance_from
         icon = "__space-age__/graphics/icons/vulcanus.png",
         starmap_icon = "__space-age__/graphics/icons/starmap-planet-vulcanus.png",
         starmap_icon_size = 512,
-        magnitude = 0.2,
+        magnitude = gen:random(0.15,0.25),
         gravity_pull = 3.7,
         asteroid_spawn_definitions = asteroid_util.spawn_definitions(asteroid_util.nauvis_vulcanus, 0.9),
         --map_gen_settings = data.raw.planet.vulcanus.map_gen_settings,

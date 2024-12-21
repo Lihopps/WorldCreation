@@ -84,7 +84,7 @@ function coord.create_system_location(max_system,gen)
   local points_cart={{x=0,y=0}}
   local max=0
   --log(serpent.block(points_cart))
-  while #points_cart<max_system and max<1000 do
+  while #points_cart<max_system and max<5000 do
     local new_point={x=gen:random(-500,500),y=gen:random(-500,500)}
     local overlap=false
     for _,point in pairs(points_cart) do

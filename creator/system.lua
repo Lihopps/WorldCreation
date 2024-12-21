@@ -27,7 +27,7 @@ local asteroids_belt_distance = 31.5 -- 4.5 orbit
 
 local systeme = {}
 
-function systeme.make_corps(parent_name, parent_location, distance_from_parent, angle, type, density, gen)
+function systeme.make_corps(global_map_gen,system,parent_name, parent_location, distance_from_parent, angle, type, density, gen)
     local orbit_distance = 1
     if type == "asteroids_belt" then
         orbit_distance = 4.5
@@ -51,7 +51,7 @@ function systeme.make_corps(parent_name, parent_location, distance_from_parent, 
     local distance = math.sqrt(cart_pos.x * cart_pos.x + cart_pos.y * cart_pos.y)
     local n_angle = coord.angle_convertf(coord.get_angle_from_cart(cart_pos))
     if type == "planet" then
-        local planet = corps.make_planet(parent_name,backers, gen, distance_from_parent, angle, position, orbit_distance, distance, n_angle)
+        local planet = corps.make_planet(global_map_gen,system,parent_name,backers, gen, distance_from_parent, angle, position, orbit_distance, distance, n_angle)
         planet.subgroup=parent_name
         planet.order="[a]"..planet.name
         return planet
@@ -110,17 +110,17 @@ end
 function systeme.create_routes_in_system(galaxy_objects)
     --add routes in system
     for name, system in pairs(galaxy_objects) do
-        if name ~= "galaxy_routes" and name ~= "Calidus" then
+        if name ~= "galaxy_routes" and name ~= "lihop-system-Calidus" then
             if #system.children == 3 then
                 local asteroid_spawn_definitions = routes.asteroids_spawn(system.belt, system.children[2],
                     system.children[3])
                 local route = {
                     type = "space-connection",
                     name = system.children[2].name .. "-to-" .. system.children[3].name,
-                    subgroup = "planet-connections",
+                    subgroup = system.name,
                     from = system.children[2].name,
                     to = system.children[3].name,
-                    order = "h",
+                    order = "[d]",
                     length = 40000,
                     asteroid_spawn_definitions =asteroid_spawn_definitions 
                 }
@@ -133,10 +133,10 @@ function systeme.create_routes_in_system(galaxy_objects)
                     local route = {
                         type = "space-connection",
                         name = edge[1].name .. "-to-" .. edge[2].name,
-                        subgroup = "planet-connections",
+                        subgroup = system.name,
                         from = edge[1].name,
                         to = edge[2].name,
-                        order = "h",
+                        order = "[d]",
                         length = 40000,
                         asteroid_spawn_definitions =asteroid_spawn_definitions
                     }
@@ -159,10 +159,10 @@ function systeme.create_routes_in_system(galaxy_objects)
             local route = {
                 type = "space-connection",
                 name = star .. "-to-" .. nearest_planet,
-                subgroup = "planet-connections",
+                subgroup = system.name,
                 from = star,
                 to = nearest_planet,
-                order = "h",
+                order = "[d]",
                 length = 20000,
                 asteroid_spawn_definitions =asteroid_spawn_definitions --asteroid_util.spawn_definitions(asteroid_util.gleba_aquilo)
             }
@@ -206,7 +206,7 @@ function systeme.create_system(number,galaxy_objects, location, gen, global_map_
     --add coprs (planet/moon)
     for i = 1, #orbit do
         if gen:random() < planet_density[system.density] then
-            table.insert(system.children,systeme.make_corps(system.name, location, i, gen:random(), "planet", system.density, gen))
+            table.insert(system.children,systeme.make_corps(global_map_gen,system,system.name, location, i, gen:random(), "planet", system.density, gen))
             --sprite pour l'orbit
             table.insert(data.raw["utility-sprites"]["default"]["starmap_star"].layers, {
                 filename = "__WorldCreation__/graphics/icons/starmap_orbit_" .. i .. ".png",
@@ -221,7 +221,7 @@ function systeme.create_system(number,galaxy_objects, location, gen, global_map_
     if system.density < 3 then
         system.belt = true
         table.insert(system.children,
-            systeme.make_corps(system.name, location, 0, gen:random(), "asteroids_belt", system.density, gen))
+            systeme.make_corps(nil,system,system.name, location, 0, gen:random(), "asteroids_belt", system.density, gen))
         table.insert(data.raw["utility-sprites"]["default"]["starmap_star"].layers, {
             filename = "__WorldCreation__/graphics/icons/starmap_asteroid_belt.png",
             size = 4096,

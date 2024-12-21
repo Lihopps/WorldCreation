@@ -1,4 +1,9 @@
 data:extend({
+    {
+    type = "surface-property",
+    name = "size_surface",
+    default_value = 90
+  },
 {
     type = "item-group",
     name = "planets",
@@ -9,12 +14,6 @@ data:extend({
 {
     type = "item-subgroup",
     name = "lihop-system-Calidus",
-    group="planets",
-    order = "0",
-},
-{
-    type = "item-subgroup",
-    name = "Calidus",
     group="planets",
     order = "0",
 },

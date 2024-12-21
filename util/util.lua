@@ -41,5 +41,14 @@ function util.split (inputstr, sep)
    return t
 end
 
+function util.constraints(value,min,max)
+    if value<min then
+        return min
+    end
+    if value>max then
+        return max
+    end
+    return value
+end
 
 return util
