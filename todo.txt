@@ -1,0 +1,12 @@
+les pipes pour le plasma
+les auto (dé)-tankler + tankler (pas transportable en fusée)
+
+le asteroids spawn de tout + longueur des trajets
+new thruster
+
+
+harvester recipe + graphics
+tech tree + discover
+localised (+factoriopedia sim ?)
+recipe all enabled false
+graphics add multi graphics for all planet / belt

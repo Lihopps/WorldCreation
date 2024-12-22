@@ -51,4 +51,46 @@ function util.constraints(value,min,max)
     return value
 end
 
+
+
+function util.set_size(e)
+	local ok=true
+	if not e.surface_index then 
+		ok=false
+		goto default 
+	end
+	if not game.surfaces[e.surface_index] then 
+		ok=false
+		goto default 
+	end
+	if not game.surfaces[e.surface_index].planet then 
+		ok=false
+		goto default 
+	end
+	if not game.surfaces[e.surface_index].planet.prototype then 
+		ok=false
+		goto default 
+	end
+	if not game.surfaces[e.surface_index].planet.prototype.surface_properties then 
+		ok=false
+		goto default 
+	end
+	if not game.surfaces[e.surface_index].planet.prototype.surface_properties["size_surface"] then 
+		ok=false
+		goto default 
+	end
+	::default::
+	local width=2000
+	local height=2000
+	
+	if ok then
+		width=game.surfaces[e.surface_index].planet.prototype.surface_properties["size_surface"]
+		height=game.surfaces[e.surface_index].planet.prototype.surface_properties["size_surface"]
+	end
+	local mgs=game.surfaces[e.surface_index].map_gen_settings
+	mgs.width=width
+	mgs.height=height
+	game.surfaces[e.surface_index].map_gen_settings=mgs
+end
+
 return util

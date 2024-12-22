@@ -32,6 +32,7 @@ local spawn_base={
 
 local function update_by_mod(global_map_gen)
     --base mod (i.e calidus system)
+    --if not global_map_gen.planet["gazeous"] then global_map_gen.planet["gazeous"]={} end
     for name,data in pairs(spawn_base) do
         if global_map_gen.planet[name] then
             global_map_gen.spawn_data[name]=data
@@ -54,13 +55,15 @@ local function update_by_mod(global_map_gen)
     ---get le global graphics
     for name,graphics_data in pairs(worldCreation_planet_graphics) do
         if not global_map_gen.graphics[name] then
-                global_map_gen.graphics[name]={}
-            end
-            table.insert(global_map_gen.graphics[name],{
-                icon=graphics_data.icon,
-                starmap_icon = graphics_data.starmap_icon,
-                starmap_icon_size = graphics_data.starmap_icon_size,
-            })
+            global_map_gen.graphics[name]={}
+        end
+        for i=1,#graphics_data do
+        table.insert(global_map_gen.graphics[name],{
+            icon=graphics_data[i].icon,
+            starmap_icon = graphics_data[i].starmap_icon,
+            starmap_icon_size = graphics_data[i].starmap_icon_size,
+        })
+        end
     end
 
     -- make consistancy (for each spawn_data check if planet sinon on deletes)
@@ -78,7 +81,7 @@ end
 local map_gen={}
 
 function map_gen.get_size_from_planet_magnitude(magnitude)
-    return util.map(magnitude,0.95,1.2,5000,20000)
+    return util.constraints(util.map(magnitude,0.95,1.2,5000,20000),1000,50000)
 end
 
 function map_gen.get_temp_by_distance(system,distance_from_parent,type)
@@ -151,6 +154,21 @@ function map_gen.clear_and_collect()
     return global_map_gen
 end
 
+function map_gen.tweak(map_gen_settings)
+    local map_gen=map_gen_settings
+
+
+
+    return map_gen
+end
+
+function map_gen.get_gazeous_field(gen)
+    local light = worldCreation_gazeous_field["light"][gen:random(1,#worldCreation_gazeous_field["light"])]
+    local heavy =worldCreation_gazeous_field["heavy"][gen:random(1,#worldCreation_gazeous_field["heavy"])]
+    local str_l="[fluid="..light.."]"
+    local str_h="[fluid="..heavy.."]"
+    return str_h.."\n"..str_l
+end
 
 return map_gen
 

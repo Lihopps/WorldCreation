@@ -8,12 +8,12 @@ function update.update(galaxy_objects)
     table.insert(galaxy_objects["lihop-system-Calidus"].children,
     {
       type = "space-connection",
-      name = "lihop-star-Calidus" .. "-to-" .. "vulcanus",
+      name = "lihopstar-Calidus" .. "-to-" .. "vulcanus",
       subgroup = "lihop-system-Calidus",
-      from = "lihop-star-Calidus",
+      from = "lihopstar-Calidus",
       to = "vulcanus",
       order = "[d]",
-      length = 20000,
+      length = 1000,--100,
       asteroid_spawn_definitions =nil
     })
 

@@ -36,9 +36,10 @@ local star = {
             is_not_in_route=true,
 
             type = "space-location",
-            name = "lihop-star-" .. system.localised_name,
+            name = "lihopstar-" .. system.localised_name,
             description="Star : "..system.star_temperature,
             localised_name = system.localised_name,
+            localised_description = "[fluid=fusion-plasma]",
             icons ={
                 {
                 icon= "__WorldCreation__/graphics/icons/starmap-star.png",

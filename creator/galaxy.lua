@@ -16,8 +16,10 @@ local function add_system_to_game(system, debloque)
         space_location = object.name
       })
     end
-    if object.type == "planet" and not object.moon and #object.children > 0 then
-      add_system_to_game(object, debloque)
+    if (object.type == "planet" or object.type == "space-location") and not object.moon and object.children then
+      if #object.children>0 then
+        add_system_to_game(object, debloque)
+      end
     end
   end
 end
@@ -82,11 +84,11 @@ local function create_and_add_system_edge_from_route(edge, galaxy_objects, gen)
     name = system_1.localised_name .. "-to-" .. system_2.localised_name,
     subgroup = system.name,
     order = "[d]",
-    length = 100000,
+    length = 1000,--100000,
     asteroid_spawn_definitions = asteroid_util.spawn_definitions(asteroid_util.gleba_aquilo)
   }
 
-  if system_1_cart.y >= system_2_cart.y then
+  if system_1_cart.x >= system_2_cart.x then
     route.from = "lihop-system-" .. system_1.localised_name .. "-to-" .. system_2.localised_name .. "-edge"
     route.to = "lihop-system-" .. system_2.localised_name .. "-to-" .. system_1.localised_name .. "-edge"
   else
@@ -119,7 +121,7 @@ local function create_routes_for_edge_in_system(galaxy_objects)
               from = "aquilo",
               to = child.name,
               order = "[d]",
-              length = 40000,
+              length = 1000,--40000,
               asteroid_spawn_definitions = asteroid_util.spawn_definitions(asteroid_util.gleba_aquilo)
             }
             --log(serpent.block(route))
@@ -143,7 +145,7 @@ local function create_routes_for_edge_in_system(galaxy_objects)
               from = planet_name,
               to = child.name,
               order = "[d]",
-              length = 40000,
+              length = 1000,--40000,
               asteroid_spawn_definitions = asteroid_util.spawn_definitions(asteroid_util.gleba_aquilo)
             }
             --log(serpent.block(route))

@@ -51,12 +51,18 @@ function systeme.make_corps(global_map_gen,system,parent_name, parent_location, 
     local distance = math.sqrt(cart_pos.x * cart_pos.x + cart_pos.y * cart_pos.y)
     local n_angle = coord.angle_convertf(coord.get_angle_from_cart(cart_pos))
     if type == "planet" then
-        local planet = corps.make_planet(global_map_gen,system,parent_name,backers, gen, distance_from_parent, angle, position, orbit_distance, distance, n_angle)
+         local planet={}
+        if gen:random()<0.2 then
+            planet= corps.make_gazeous_planet(global_map_gen,system,parent_name,backers, gen, distance_from_parent, angle, position, orbit_distance, distance, n_angle)
+        else
+            planet= corps.make_planet(global_map_gen,system,parent_name,backers, gen, distance_from_parent, angle, position, orbit_distance, distance, n_angle)
+        end
         planet.subgroup=parent_name
         planet.order="[a]"..planet.name
         return planet
     elseif type == "asteroids_belt" then
         local name = backers[gen:random(#backers)]
+        
         local belt = {
             local_distance = distance_from_parent,
             local_angle = angle,
@@ -67,9 +73,10 @@ function systeme.make_corps(global_map_gen,system,parent_name, parent_location, 
             name = "lihop-asteroids_belt-" .. name,
             localised_name = name,
             draw_orbit = false,
-            icon = "__space-age__/graphics/icons/vulcanus.png",
-            starmap_icon = "__space-age__/graphics/icons/starmap-planet-vulcanus.png",
-            starmap_icon_size = 512,
+
+            icon = global_map_gen.graphics[type][gen:random(1,#global_map_gen.graphics[type])].icon ,
+            starmap_icon = global_map_gen.graphics[type][gen:random(1,#global_map_gen.graphics[type])].starmap_icon ,
+            starmap_icon_size = global_map_gen.graphics[type][gen:random(1,#global_map_gen.graphics[type])].starmap_icon_size ,
             distance = distance,
             orientation = n_angle,
             fly_condition = true,
@@ -111,7 +118,21 @@ function systeme.create_routes_in_system(galaxy_objects)
     --add routes in system
     for name, system in pairs(galaxy_objects) do
         if name ~= "galaxy_routes" and name ~= "lihop-system-Calidus" then
-            if #system.children == 3 then
+            if #system.children == 2 then
+                local asteroid_spawn_definitions = routes.asteroids_spawn(system.belt, system.children[1],
+                    system.children[2])
+                local route = {
+                    type = "space-connection",
+                    name = system.children[1].name .. "-to-" .. system.children[2].name,
+                    subgroup = system.name,
+                    from = system.children[1].name,
+                    to = system.children[2].name,
+                    order = "[d]",
+                    length = 1000,--40000,
+                    asteroid_spawn_definitions =asteroid_spawn_definitions 
+                }
+                table.insert(system.children, route)
+            elseif #system.children == 3 then
                 local asteroid_spawn_definitions = routes.asteroids_spawn(system.belt, system.children[2],
                     system.children[3])
                 local route = {
@@ -121,7 +142,7 @@ function systeme.create_routes_in_system(galaxy_objects)
                     from = system.children[2].name,
                     to = system.children[3].name,
                     order = "[d]",
-                    length = 40000,
+                    length = 1000,--40000,
                     asteroid_spawn_definitions =asteroid_spawn_definitions 
                 }
                 table.insert(system.children, route)
@@ -137,7 +158,7 @@ function systeme.create_routes_in_system(galaxy_objects)
                         from = edge[1].name,
                         to = edge[2].name,
                         order = "[d]",
-                        length = 40000,
+                        length = 1000,--40000,
                         asteroid_spawn_definitions =asteroid_spawn_definitions
                     }
                     table.insert(system.children, route)
@@ -155,7 +176,7 @@ function systeme.create_routes_in_system(galaxy_objects)
                     end
                 end
             end
-            local star = "lihop-star-" .. system.localised_name
+            local star = "lihopstar-" .. system.localised_name
             local route = {
                 type = "space-connection",
                 name = star .. "-to-" .. nearest_planet,
@@ -163,7 +184,7 @@ function systeme.create_routes_in_system(galaxy_objects)
                 from = star,
                 to = nearest_planet,
                 order = "[d]",
-                length = 20000,
+                length = 1000,--20000,
                 asteroid_spawn_definitions =asteroid_spawn_definitions --asteroid_util.spawn_definitions(asteroid_util.gleba_aquilo)
             }
             table.insert(system.children, route)
@@ -221,7 +242,7 @@ function systeme.create_system(number,galaxy_objects, location, gen, global_map_
     if system.density < 3 then
         system.belt = true
         table.insert(system.children,
-            systeme.make_corps(nil,system,system.name, location, 0, gen:random(), "asteroids_belt", system.density, gen))
+            systeme.make_corps(global_map_gen,system,system.name, location, 0, gen:random(), "asteroids_belt", system.density, gen))
         table.insert(data.raw["utility-sprites"]["default"]["starmap_star"].layers, {
             filename = "__WorldCreation__/graphics/icons/starmap_asteroid_belt.png",
             size = 4096,
