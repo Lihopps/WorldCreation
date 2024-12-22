@@ -1,3 +1,5 @@
+local superbarrel=require("util.superbarrel")
+
 --create space-connection icon
 for name, prototype in pairs(data.raw["space-connection"]) do
   local from = data.raw["space-location"][prototype.from] or data.raw["planet"][prototype.from]
@@ -25,8 +27,8 @@ for name, prototype in pairs(data.raw["space-connection"]) do
   end
 end
 
--- add harvesting light and heavy recipe
 --worldCreation_gazeous_field={light={},heavy={}}
+--add harvesting light and heavy recipe and create super barrel
 for type, fluids in pairs(worldCreation_gazeous_field) do
   for _, fluid in pairs(fluids) do
     local temp=data.raw["fluid"][fluid].max_temperature or data.raw["fluid"][fluid].default_temperature
@@ -42,18 +44,10 @@ for type, fluids in pairs(worldCreation_gazeous_field) do
         results = { { type = "fluid", name = fluid, amount = 100,temperature=temp } }
       },
     })
+    local fluidproto=data.raw["fluid"][fluid]
+    superbarrel.create_all(fluidproto,temp)
+
   end
 end
-data:extend({
-  {
-    type = "recipe",
-    name = "lihop-harvesting-fusion-plasma",
-    enabled = true,
-    surface_conditions = { { property = "gravity", min = 0, max = 0 } },
-    category = "lihop-harvesting-heavy",
-    energy_required = 2,
-    ingredients = {},
-    results = { { type = "fluid", name = "fusion-plasma", amount = 100,temperature=data.raw["fluid"]["fusion-plasma"].max_temperature } }
-  },
-})
+
 -- make super barrel for gazeous fluid

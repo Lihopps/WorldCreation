@@ -1,4 +1,14 @@
 local util=require("util.util")
+
+local function change_state_plasma_havester(platforme,state)
+    local filter={ name = {"lihop-harvester-plasma"}}
+    local harvesters=platforme.surface.find_entities_filtered(filter) 
+    if not harvesters then return end
+    for _,harvester in pairs(harvesters) do
+        harvester.active=state
+    end
+end
+
 local function set_recipe(platforme,n)
     local filter={ name = {"lihop-harvester-heavy","lihop-harvester-light"}}
     local harvesters=platforme.surface.find_entities_filtered(filter) 
@@ -23,7 +33,7 @@ local function set_recipe(platforme,n)
                     harvester.set_recipe()
                 end
             end
-        else    
+        else
             harvester.clear_fluid_inside()
             harvester.set_recipe()
         end
@@ -35,12 +45,19 @@ local function on_space_platform_changed_state(e)
     local platforme=e.platform
     if not platforme then return end
     if platforme.space_location then 
-        if string.find(platforme.space_location.name,"lihopstar-") or string.find(platforme.space_location.name,"lihopgazeous")  then
+        if string.find(platforme.space_location.name,"lihopgazeous")  then
             set_recipe(platforme,0)
+        elseif string.find(platforme.space_location.name,"lihopstar-") then
+            change_state_plasma_havester(platforme,true)
+        else
+            --reset factories
+            set_recipe(platforme,1)
+            change_state_plasma_havester(platforme,false)
         end
     else
         --reset factories
         set_recipe(platforme,1)
+        change_state_plasma_havester(platforme,false)
 
     end
 end

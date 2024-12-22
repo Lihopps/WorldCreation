@@ -25,4 +25,8 @@ data:extend({
         type = "recipe-category",
         name = "lihop-harvesting-heavy"
     },
+    {
+        type = "recipe-category",
+        name = "lihop-harvesting-plasma"
+    },
 })

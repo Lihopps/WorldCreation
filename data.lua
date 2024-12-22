@@ -1,4 +1,5 @@
 require("categories.group")
+require("prototypes.technologies")
 require("prototypes.entities.entities")
 require("prototypes.resources.resource")
 

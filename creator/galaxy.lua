@@ -169,30 +169,6 @@ local function add_galaxy_to_game(galaxy_objects, debloque)
       add_system_to_game(system, debloque)
     end
   end
-
-  data:extend {
-    {
-      type = "technology",
-      name = "planet-discovery-lihop",
-      icons = util.technology_icon_constant_planet("__space-age__/graphics/technology/vulcanus.png"),
-      icon_size = 256,
-      essential = true,
-      effects = debloque,
-      prerequisites = { "space-platform-thruster" },
-      unit =
-      {
-        count = 1000,
-        ingredients =
-        {
-          { "automation-science-pack", 1 },
-          { "logistic-science-pack",   1 },
-          { "chemical-science-pack",   1 },
-          { "space-science-pack",      1 }
-        },
-        time = 60
-      }
-    },
-  }
 end
 
 local galaxy = {}
@@ -208,7 +184,8 @@ function galaxy.create_galaxy(seed, global_map_gen)
   create_routes_for_edge_in_system(galaxy_objects)
 
   local debloque = {}
-  add_galaxy_to_game(galaxy_objects, debloque)
+  add_galaxy_to_game(galaxy_objects, data.raw["technology"]["planet-discovery-lihop"].effects)
+  
 end
 
 return galaxy
