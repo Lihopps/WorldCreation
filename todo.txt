@@ -1,4 +1,4 @@
-les auto (dé)-tankler + tankler (pas transportable en fusée pour la montée)
+
 new thruster
 
 le asteroids spawn de tout + longueur des trajets

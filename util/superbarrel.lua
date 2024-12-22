@@ -102,12 +102,12 @@ end
 
 local function get_or_create_barrel_item(name, fluid, empty_barrel_item)
     local existing_item = get_item(name)
-    local tank=existing_item
     if not existing_item then
-        tank=create_barrel_item(name, fluid, empty_barrel_item)
+        existing_item=create_barrel_item(name, fluid, empty_barrel_item)
     end
-    tank.weight=2*tons
-    return tank
+    existing_item.weight=2*tons
+    existing_item.stack_size=1
+    return existing_item
 end
 
 local function generate_barrel_recipe_icons(fluid, base_icon, top_mask, fluid_icon_shift)
