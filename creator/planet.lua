@@ -53,10 +53,7 @@ function corps.make_planet(global_map_gen,system,system_name,backers,gen,distanc
         }
     }
 
-    planet.map_gen_settings.autoplace_controls["holmium-ore"]={frequency=6,size=6,richness=6}
-    planet.map_gen_settings.autoplace_settings["entity"]["settings"]["holmium-ore"]={frequency=6,size=6,richness=6}
-    planet.map_gen_settings.autoplace_controls["sulfur"]={frequency=6,size=6,richness=6}
-    planet.map_gen_settings.autoplace_settings["entity"]["settings"]["sulfur"]={frequency=6,size=6,richness=6}
+    
 
     --ici on peut creer une moon si besoin
     if gen:random() < moon_density[gen:random(1, 3)] then

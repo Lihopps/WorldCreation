@@ -1,7 +1,7 @@
 local resource_autoplace = require("__core__/lualib/resource-autoplace")
 local sounds = require("__base__/prototypes/entity/sounds")
 
-resource_autoplace.initialize_patch_set("iron-ore", true)
+resource_autoplace.initialize_patch_set("holmium-ore", true)
 
 local stone_driving_sound =
 {
@@ -36,13 +36,22 @@ local function resource(resource_parameters, autoplace_parameters)
     collision_mask = resource_parameters.collision_mask,
     collision_box = {{-0.1, -0.1}, {0.1, 0.1}},
     selection_box = {{-0.5, -0.5}, {0.5, 0.5}},
-    autoplace = resource_autoplace.resource_autoplace_settings
+    autoplace = autoplace_parameters.probability_expression ~= nil and
+    {
+      control = resource_parameters.name,
+      order = resource_parameters.order,
+      --default_enabled=false,
+      probability_expression = autoplace_parameters.probability_expression,
+      richness_expression = autoplace_parameters.richness_expression
+    }
+    or resource_autoplace.resource_autoplace_settings
     {
       name = resource_parameters.name,
       order = resource_parameters.order,
+      --default_enabled=false,
+      autoplace_control_name = resource_parameters.autoplace_control_name,
       base_density = autoplace_parameters.base_density,
       base_spots_per_km = autoplace_parameters.base_spots_per_km2,
-      has_starting_area_placement = true,
       regular_rq_factor_multiplier = autoplace_parameters.regular_rq_factor_multiplier,
       starting_rq_factor_multiplier = autoplace_parameters.starting_rq_factor_multiplier,
       candidate_spot_count = autoplace_parameters.candidate_spot_count,
@@ -91,7 +100,8 @@ data:extend({
     {
       base_density = 4,
       regular_rq_factor_multiplier = 1.0,
-      starting_rq_factor_multiplier = 1.1
+      starting_rq_factor_multiplier = 1.1,
+      --probability_expression = 0,
     }
   ),
   {
@@ -116,7 +126,8 @@ data:extend({
     {
       base_density = 3,
       regular_rq_factor_multiplier = 0.8,
-      starting_rq_factor_multiplier = 0.7
+      starting_rq_factor_multiplier = 0.7,
+      --probability_expression = 0,
     }
   ),
 })

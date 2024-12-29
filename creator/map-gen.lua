@@ -155,11 +155,17 @@ function map_gen.clear_and_collect()
 end
 
 function map_gen.tweak(map_gen_settings)
-    local map_gen=map_gen_settings
+    local mgs=table.deepcopy(map_gen_settings)
+    mgs.autoplace_settings["entity"].treat_missing_as_default=false
+    if math.random()<0.1 then
+   
+        mgs.autoplace_controls["holmium-ore"]={}
+        mgs.autoplace_settings["entity"]["settings"]["holmium-ore"]={}
+        mgs.autoplace_controls["sulfur"]={}
+        mgs.autoplace_settings["entity"]["settings"]["sulfur"]={}
+    end
 
-
-
-    return map_gen
+    return mgs
 end
 
 function map_gen.get_gazeous_field(gen)

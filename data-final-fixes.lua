@@ -1,4 +1,4 @@
-local superbarrel=require("util.superbarrel")
+local superbarrel = require("util.superbarrel")
 
 --create space-connection icon
 for name, prototype in pairs(data.raw["space-connection"]) do
@@ -31,23 +31,69 @@ end
 --add harvesting light and heavy recipe and create super barrel
 for type, fluids in pairs(worldCreation_gazeous_field) do
   for _, fluid in pairs(fluids) do
-    local temp=data.raw["fluid"][fluid].max_temperature or data.raw["fluid"][fluid].default_temperature
+    local temp = data.raw["fluid"][fluid].max_temperature or data.raw["fluid"][fluid].default_temperature
     data:extend({
       {
         type = "recipe",
-        name = "lihop-harvesting-".. fluid,
+        name = "lihop-harvesting-" .. fluid,
         enabled = true,
         surface_conditions = { { property = "gravity", min = 0, max = 0 } },
         category = "lihop-harvesting-" .. type,
         energy_required = 2,
         ingredients = {},
-        results = { { type = "fluid", name = fluid, amount = 100,temperature=temp } }
+        results = { { type = "fluid", name = fluid, amount = 100, temperature = temp } }
       },
     })
-    local fluidproto=data.raw["fluid"][fluid]
-    superbarrel.create_all(fluidproto,temp)
-
+    local fluidproto = data.raw["fluid"][fluid]
+    superbarrel.create_all(fluidproto, temp)
   end
 end
 
--- make super barrel for gazeous fluid
+
+-- add tile prop for planet size
+for name, tile in pairs(data.raw.tile) do
+  if name == "out-of-map" then
+    tile.autoplace = { probability_expression = "if(distance < planet_size, -1000, 1)" }
+  elseif name == "empty-space" then
+    tile.autoplace = { probability_expression = "if(distance < planet_size+5, -1000, 1)" }
+  else
+    if tile.autoplace and tile.autoplace.probability_expression then
+      tile.autoplace.probability_expression = "if(distance < planet_size, " ..tile.autoplace.probability_expression .. ", -1000)"
+    end
+  end
+end
+
+for name, planet in pairs(data.raw.planet) do
+  local map_settings = planet.map_gen_settings
+  if not map_settings then
+    log("skipping planet with no mapgen settings: " .. name)
+    goto continue
+  end
+
+  map_settings.autoplace_settings.tile.settings["out-of-map"] = {}
+  map_settings.autoplace_settings.tile.settings["empty-space"] = {}
+  local planet_scale = planet.surface_properties.size_surface or 5000
+  map_settings.property_expression_names["planet_size"] = planet_scale
+
+  if not map_settings.territory_settings then goto continue end
+  local expr_name = map_settings.territory_settings.territory_index_expression
+  if not expr_name then goto continue end
+
+  local new_expr_name = expr_name .. "_with_radius"
+
+  local new_expr = data.raw["noise-expression"][new_expr_name]
+  if not new_expr then
+    data:extend {
+      {
+        type = "noise-expression",
+        name = new_expr_name,
+        expression = expr_name .. " - (distance >= planet_size-32)"
+      }
+    }
+  end
+
+  map_settings.territory_settings.territory_index_expression = new_expr_name
+
+
+  ::continue::
+end

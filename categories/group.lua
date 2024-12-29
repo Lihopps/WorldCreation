@@ -5,6 +5,11 @@ data:extend({
         default_value = 90
     },
     {
+        type = "surface-property",
+        name = "dyson_sphere_site",
+        default_value = 0
+    },
+    {
         type = "item-group",
         name = "planets",
         order = "a",

@@ -1,13 +1,51 @@
 
 new thruster
-
+le tweak map gen
+ajouter des conditions au recipe
 le asteroids spawn de tout + longueur des trajets
-
-
+refaire correctement le hub + rocket + satellite data 
+techno qui increment avec le lunch
+faire que le site de dyson sphere est aleatoire
+bouger le bot dans un autre group
 pipe and silo graphics
+faire que le rocket silo prenne une fusée (donc faire le craft pour une fusée 50parts)
 harvester recipe + graphics
 tech tree + discover
-des subgroup ?
+des subgroup ? + orga des new item
 localised (+factoriopedia sim ?)
 recipe all enabled false
 graphics add multi graphics for all planet / belt
+
+
+
+
+
+
+
+-----------------------
+on fait un fluid de con,avec les gazeuses
+on se sert du fluid pour miner
+puis on rafine le metal rare => 
+
+dyson sphere part =( plateform scaffolding, fibre carbon, processor, item1)
+item1 = low density + blue + itemi2+fluid de con
+item2 = steel + item3 + sulfur acid
+item3 = metal rare + brine
+metal rare(mining) = rare ore + fluid de con 
+
+fluid de con + 1/2 fluo(cold) = holmium raf + fluo (hot) + fluorine + item4 
+item4=itemi1+itemi2+itemi3
+itemi1=(belt)
+itemi2=(belt)
+itemi3=(star)
+
+item ionisé se spoil en item standard (1h)
+
+
+new tres rare ore et tres rare fluid(?)
+on l'upgrade avec tout le rare des planets + des truc spoilable
+
+puis on veut une tech qui dit :
+dyson sphere pour le portal ? kill player ?
+    planet full of plasma lake 
+craft 72k (?) legendary (?) uniquement sur la space-location "portal" 
