@@ -1,3 +1,5 @@
+lihop_debug=true
+
 require("creator.noise")
 
 require("categories.group")
@@ -79,7 +81,7 @@ plasma_silo_item.icon_size = 64
 plasma_silo_item.place_result = "rocket-silo2"
 
 local plasma_silo_recipe = table.deepcopy(data.raw["recipe"]["rocket-silo"])
-plasma_silo_recipe.enabled = true
+plasma_silo_recipe.enabled = lihop_debug
 plasma_silo_recipe.name = "rocket-silo2"
 plasma_silo_recipe.results = { { type = "item", name = "rocket-silo2", amount = 1 } }
 
@@ -98,7 +100,7 @@ plasma_silo_item.icon_size = 64
 plasma_silo_item.place_result = "cargo-landing-pad2"
 
 plasma_silo_recipe = table.deepcopy(data.raw["recipe"]["cargo-landing-pad"])
-plasma_silo_recipe.enabled = true
+plasma_silo_recipe.enabled = lihop_debug
 plasma_silo_recipe.name = "cargo-landing-pad2"
 plasma_silo_recipe.results = { { type = "item", name = "cargo-landing-pad2", amount = 1 } }
 

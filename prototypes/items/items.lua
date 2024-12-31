@@ -1,4 +1,4 @@
-local debug=true
+
 
 local function make_ionise_item(item_name,ioning_type)
     --ioning
@@ -33,7 +33,7 @@ data:extend({
     {
         type = "recipe",
         name = "lihop-dyson-scaffold",
-        enabled = debug,
+        enabled = lihop_debug,
         category = "electromagnetics",
         main_product="lihop-dyson-scaffold",
         energy_required = 10,
@@ -63,7 +63,7 @@ data:extend({
     {
         type = "recipe",
         name = "lihop-titan-mesh",
-        enabled = debug,
+        enabled = lihop_debug,
         category="metallurgy",
         energy_required = 3,
         ingredients =
@@ -92,7 +92,7 @@ data:extend({
      {
         type = "recipe",
         name = "lihop-titan-rod",
-        enabled = debug,
+        enabled = lihop_debug,
         category="metallurgy",
         main_product="lihop-titan-rod",
         energy_required = 10,
@@ -120,7 +120,7 @@ data:extend({
     {
         type = "recipe",
         name = "lihop-titan-plate",
-        enabled = debug,
+        enabled = lihop_debug,
         category = "electromagnetics",
         energy_required = 2,
         ingredients =
@@ -163,7 +163,7 @@ data:extend({
     {
         type = "recipe",
         name = "lihop-chemical-catalyst",
-        enabled = debug,
+        enabled = lihop_debug,
         category = "organic",
         energy_required = 2,
         ingredients =
@@ -194,7 +194,7 @@ data:extend({
     {
         type = "recipe",
         name = "lihop-rocket",
-        enabled = debug,
+        enabled = lihop_debug,
         energy_required = 50*4,
         icon = "__WorldCreation__/graphics/icons/rocket.png",
         ingredients =
@@ -222,7 +222,7 @@ data:extend({
     {
         type = "recipe",
         name = "lihop-rocket-to-part",
-        enabled = debug,
+        enabled = lihop_debug,
         hidden=true,
         hidden_in_factoriopedia=true,
         category = "rocket-building",

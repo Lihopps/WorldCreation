@@ -40,7 +40,6 @@ local function resource(resource_parameters, autoplace_parameters)
     {
       control = resource_parameters.name,
       order = resource_parameters.order,
-      --default_enabled=false,
       probability_expression = autoplace_parameters.probability_expression,
       richness_expression = autoplace_parameters.richness_expression
     }
@@ -48,7 +47,6 @@ local function resource(resource_parameters, autoplace_parameters)
     {
       name = resource_parameters.name,
       order = resource_parameters.order,
-      --default_enabled=false,
       autoplace_control_name = resource_parameters.autoplace_control_name,
       base_density = autoplace_parameters.base_density,
       base_spots_per_km = autoplace_parameters.base_spots_per_km2,

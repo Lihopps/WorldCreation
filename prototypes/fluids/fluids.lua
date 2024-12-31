@@ -1,9 +1,9 @@
-local debug=true
+
 data:extend({
     {
         type = "recipe",
         name = "lihop-titan-catalyseur",
-        enabled = debug,
+        enabled = lihop_debug,
         category = "cryogenics",
         main_product="lihop-titan-catalyseur",
         energy_required = 20,

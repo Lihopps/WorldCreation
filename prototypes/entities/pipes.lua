@@ -29,7 +29,7 @@ plasma_pipe_item.icon_size = 64
 plasma_pipe_item.place_result = "plasma_pipe"
 
 local plasma_pipe_recipe = table.deepcopy(data.raw["recipe"]["pipe"])
-plasma_pipe_recipe.enabled = true
+plasma_pipe_recipe.enabled = lihop_debug
 plasma_pipe_recipe.name = "plasma_pipe"
 plasma_pipe_recipe.results = { { type = "item", name = "plasma_pipe", amount = 1 } }
 
@@ -54,7 +54,7 @@ plasma_pipe__ground_item.icon_size = 64
 plasma_pipe__ground_item.place_result = "plasma_pipe-to-ground"
 
 local plasma_pipe_ground_recipe = table.deepcopy(data.raw["recipe"]["pipe-to-ground"])
-plasma_pipe_ground_recipe.enabled = true
+plasma_pipe_ground_recipe.enabled = lihop_debug
 plasma_pipe_ground_recipe.name = "plasma_pipe-to-ground"
 plasma_pipe_ground_recipe.results = { { type = "item", name = "plasma_pipe-to-ground", amount = 1 } }
 
@@ -83,7 +83,7 @@ plasma_silo_item.icon_size = 64
 plasma_silo_item.place_result = "plasma_silo"
 
 local plasma_silo_recipe = table.deepcopy(data.raw["recipe"]["storage-tank"])
-plasma_silo_recipe.enabled = true
+plasma_silo_recipe.enabled = lihop_debug
 plasma_silo_recipe.name = "plasma_silo"
 plasma_silo_recipe.results = { { type = "item", name = "plasma_silo", amount = 1 } }
 

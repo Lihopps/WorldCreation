@@ -14,7 +14,7 @@ end
 local technology_name = "lihop-superbarrel"
 -- The base empty barrel item
 local empty_barrel_name = "storage-tank"
-local enabled = true
+local enabled = lihop_debug
 
 -- Item icon masks
 local barrel_hoop_top_mask ="__WorldCreation__/graphics/icons/storage-tank.png"                          

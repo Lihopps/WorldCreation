@@ -18,24 +18,28 @@ local function on_rocket_launch_ordered(e)
                             --game.print("chk2")
                             --game.print(item.name)
                             if item.prototype.rocket_launch_products then
-                                local data = util.split(item.prototype.rocket_launch_products[1].name, "-")
-                                --game.print(serpent.block(data))
-                                if #data > 2 then
-                                    if data[#data - 1] == "ioning" then
-                                        --game.print("chk3")
-                                        if data[#data] == "star" then
-                                            --game.print("chk4")
-                                            if string.find(name, "lihopstar") then
-                                                --game.print("chk5")
-                                                --all good
-                                                return
-                                            end
-                                        elseif data[#data] == "belt" then
-                                            --game.print("chk6")
-                                            if string.find(name, "asteroids_belt") then
-                                                --game.print("chk7")
-                                                --all good
-                                                return
+                                if item.prototype.rocket_launch_products[1].name== "" then
+                                    -- check qu'on est bien sur le dyson sphere site
+                                else
+                                    local data = util.split(item.prototype.rocket_launch_products[1].name, "-")
+                                    --game.print(serpent.block(data))
+                                    if #data > 2 then
+                                        if data[#data - 1] == "ioning" then
+                                            --game.print("chk3")
+                                            if data[#data] == "star" then
+                                                --game.print("chk4")
+                                                if string.find(name, "lihopstar") then
+                                                    --game.print("chk5")
+                                                    --all good
+                                                    return
+                                                end
+                                            elseif data[#data] == "belt" then
+                                                --game.print("chk6")
+                                                if string.find(name, "asteroids_belt") then
+                                                    --game.print("chk7")
+                                                    --all good
+                                                    return
+                                                end
                                             end
                                         end
                                     end

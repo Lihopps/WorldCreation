@@ -6,7 +6,7 @@ data:extend({
     {
         type = "recipe",
         name = "lihop-harvester-heavy",
-        enabled = true,
+        enabled = lihop_debug,
         energy_required = 2,
         ingredients =
         {

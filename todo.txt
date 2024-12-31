@@ -8,12 +8,11 @@ techno qui increment avec le lunch
 faire que le site de dyson sphere est aleatoire
 bouger le bot dans un autre group
 pipe and silo graphics
-faire que le rocket silo prenne une fusée (donc faire le craft pour une fusée 50parts)
 harvester recipe + graphics
 tech tree + discover
 des subgroup ? + orga des new item
 localised (+factoriopedia sim ?)
-recipe all enabled false
+hide recipe fluid in fpedia
 graphics add multi graphics for all planet / belt
 
 

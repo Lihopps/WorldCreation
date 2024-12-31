@@ -5,7 +5,7 @@ data:extend({
     {
         type = "recipe",
         name = "lihop-harvesting-fusion-plasma",
-        enabled = true,
+        enabled = lihop_debug,
         surface_conditions = { { property = "gravity", min = 0, max = 0 } },
         category = "lihop-harvesting-plasma",
         energy_required = 2,
@@ -15,7 +15,7 @@ data:extend({
     {
         type = "recipe",
         name = "lihop-harvester-plasma",
-        enabled = true,
+        enabled = lihop_debug,
         energy_required = 2,
         ingredients =
         {

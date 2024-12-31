@@ -36,7 +36,7 @@ for type, fluids in pairs(worldCreation_gazeous_field) do
       {
         type = "recipe",
         name = "lihop-harvesting-" .. fluid,
-        enabled = true,
+        enabled = lihop_debug,
         surface_conditions = { { property = "gravity", min = 0, max = 0 } },
         category = "lihop-harvesting-" .. type,
         energy_required = 2,
