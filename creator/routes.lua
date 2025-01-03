@@ -154,16 +154,22 @@ function routes.create_galaxy_routes(galaxy_objects)
 
 end
 
-function routes.asteroids_spawn(belt,planet_1,planet_2)
-    if belt then
-        --log(serpent.block(planet_1))
-        --log(serpent.block(planet_2))
-        if math.min(planet_1.orbit_distance,planet_2.orbit_distance)<4.5 and math.max(planet_1.orbit_distance,planet_2.orbit_distance)>4.5 then
-            log("routes in asteroids")
-            return asteroid_util.spawn_definitions(asteroid_util.gleba_aquilo)
-        end
+function routes.length(from,to)
+    local min_length=2000
+    if lihop_speed then return min_length/2 end
+    
+    --edge to edge
+    if string.find(from.name,"edge") and string.find(to.name,"edge") then
+        return util.constraints(math.random(85,110)*10000,min_length,math.huge)
     end
-    return asteroid_util.spawn_definitions(asteroid_util.gleba_aquilo)
+
+    -- inner connection => calculate with distance betwwen from and to
+    --1 jump =15000
+    local from_ring=from.orbit_distance
+    local to_ring=to.orbit_distance
+    return util.constraints(math.abs(from_ring-to_ring)*15000,min_length,math.huge)
+
+
 end
 
 return routes

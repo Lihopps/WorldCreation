@@ -9,6 +9,7 @@ data:extend({
         surface_conditions = { { property = "gravity", min = 0, max = 0 } },
         category = "lihop-harvesting-plasma",
         energy_required = 2,
+        hidden_in_factoriopedia=true,
         ingredients = {},
         results = { { type = "fluid", name = "fusion-plasma", amount = 100, temperature = data.raw["fluid"]["fusion-plasma"].max_temperature } }
     },

@@ -1,6 +1,7 @@
-require("util.randomlua")
-local asteroid_util = require("__space-age__.prototypes.planet.asteroid-spawn-definitions")
 
+
+
+local asteroids = require("creator.asteroids")
 local coord = require("util.coordonnee")
 local system = require("creator.system")
 local routes = require("creator.routes")
@@ -78,14 +79,13 @@ local function create_and_add_system_edge_from_route(edge, galaxy_objects, gen)
     scale = 1,
     shift = coord.position_to_layer(system_2.location.distance, system_2.location.angle),
   })
-
+  local asteroids_spawn,asteroid_influence=asteroids.spawn_connection_edge_to_edge()
   local route = {
     type = "space-connection",
     name = system_1.localised_name .. "-to-" .. system_2.localised_name,
-    subgroup = system.name,
-    order = "[d]",
-    length = 1000,--100000,
-    asteroid_spawn_definitions = asteroid_util.spawn_definitions(asteroid_util.gleba_aquilo)
+    subgroup = "egde-to-edge-connection",
+    --length = 1000,--100000,
+    asteroid_spawn_definitions = asteroids_spawn
   }
 
   if system_1_cart.x >= system_2_cart.x then
@@ -102,6 +102,14 @@ end
 local function create_routes_between_system(galaxy_objects, gen)
   local galaxy_routes = routes.create_galaxy_routes(galaxy_objects)
   galaxy_objects["galaxy_routes"] = {}
+  data:extend({
+        {
+        type = "item-subgroup",
+        name = "egde-to-edge-connection",
+        group = "planets",
+        order = "zzzzz",
+        }
+    })
   for _, edge in pairs(galaxy_routes) do
     --add les deux edges et ajoute la route
     create_and_add_system_edge_from_route(edge, galaxy_objects, gen)
@@ -114,6 +122,7 @@ local function create_routes_for_edge_in_system(galaxy_objects)
       for _, child in pairs(system.children) do
         if child.type == "space-location" and string.find(child.name, "edge") then
           if name == "lihop-system-Calidus" then -- on creer les edges sur Aquilo
+            --local asteroids_spawn,asteroid_influence=asteroids.spawn_connection_inner_to_edge()
             local route = {
               type = "space-connection",
               name = "aquilo" .. "-to-" .. child.name,
@@ -121,8 +130,9 @@ local function create_routes_for_edge_in_system(galaxy_objects)
               from = "aquilo",
               to = child.name,
               order = "[d]",
-              length = 1000,--40000,
-              asteroid_spawn_definitions = asteroid_util.spawn_definitions(asteroid_util.gleba_aquilo)
+              --length = 1000,--40000,
+              need_spanwdef=true
+             -- asteroid_spawn_definitions = asteroids_spawn
             }
             --log(serpent.block(route))
             table.insert(galaxy_objects[name].children, route)
@@ -138,6 +148,7 @@ local function create_routes_for_edge_in_system(galaxy_objects)
               end
             end
             --on creer la connexion
+            --local asteroids_spawn,asteroid_influence=asteroids.spawn_connection_inner_to_edge()
             local route = {
               type = "space-connection",
               name = planet_name .. "-to-" .. child.name,
@@ -145,8 +156,9 @@ local function create_routes_for_edge_in_system(galaxy_objects)
               from = planet_name,
               to = child.name,
               order = "[d]",
-              length = 1000,--40000,
-              asteroid_spawn_definitions = asteroid_util.spawn_definitions(asteroid_util.gleba_aquilo)
+              --length = 1000,--40000,
+              need_spanwdef=true
+              --asteroid_spawn_definitions = asteroids_spawn
             }
             --log(serpent.block(route))
             table.insert(galaxy_objects[name].children, route)

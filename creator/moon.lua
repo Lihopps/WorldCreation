@@ -1,7 +1,8 @@
-local asteroid_util = require("__space-age__.prototypes.planet.asteroid-spawn-definitions")
+
 local coord = require("util.coordonnee")
 local map_gen=require("creator.map-gen")
 local util=require("util.util")
+local asteroids=require("creator.asteroids")
 
 local robot_cons={1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,3,3,3,4,4,5}
 
@@ -36,7 +37,7 @@ function corps.make_moon(global_map_gen,system,planet,system_name,parent_name, p
     local gravity=pressure*robot_comsuption/100
     local magnitude=util.map(gravity,5,250,0.5,0.8)
 
-
+    local asteroids_spawn,asteroid_influence,spawn_data=asteroids.spawn_planet(name_gen)
     local moon = {
         local_distance = distance_from_parent,
         local_angle = angle,
@@ -61,7 +62,9 @@ function corps.make_moon(global_map_gen,system,planet,system_name,parent_name, p
         gravity_pull = 10*magnitude,
         solar_power_in_space=planet.solar_power_in_space,
         
-        asteroid_spawn_definitions = asteroid_util.spawn_definitions(asteroid_util.nauvis_vulcanus, 0.9),
+        asteroid_spawn_definitions = asteroids_spawn,
+        asteroid_spawn_influence=asteroid_influence,
+        spawn_data=spawn_data,
         
         map_gen_settings = map_gen.tweak(data.raw.planet[name_gen].map_gen_settings),
         surface_properties = {

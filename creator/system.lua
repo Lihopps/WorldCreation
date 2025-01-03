@@ -7,11 +7,7 @@
 --orbit_4=25.5
 --orbit_5=39.5
 --orbit_6~=44.25
-local asteroid = require("creator.asteroids")
-
-
-local asteroid_util = require("__space-age__.prototypes.planet.asteroid-spawn-definitions")
-
+local asteroids = require("creator.asteroids")
 local coord = require("util.coordonnee")
 local backers = require("__WorldCreation__.backers")
 local routes = require("creator.routes")
@@ -62,7 +58,7 @@ function systeme.make_corps(global_map_gen,system,parent_name, parent_location, 
         return planet
     elseif type == "asteroids_belt" then
         local name = backers[gen:random(#backers)]
-        
+        local asteroids_spawn,asteroid_influence,spawn_data=asteroids.spawn_belt()
         local belt = {
             local_distance = distance_from_parent,
             local_angle = angle,
@@ -83,11 +79,18 @@ function systeme.make_corps(global_map_gen,system,parent_name, parent_location, 
             subgroup=parent_name,
             order="[b]",
             magnitude = 1,
-            gravity_pull = 3.7,
-            asteroid_spawn_definitions = asteroid_util.spawn_definitions(asteroid_util.nauvis_vulcanus, 0.9),
+            gravity_pull = 0,
+
+            asteroid_spawn_definitions = asteroids_spawn,
+            asteroid_spawn_influence=asteroid_influence,
+            spawn_data=spawn_data
         }
+        if mods["visible-planets"] then
+            vp_add_planets_to_blacklist({belt.name}) 
+        end
         return belt
     elseif type == "edge" then
+        local asteroids_spawn,asteroid_influence=asteroids.spawn_edge()
         local edge = {
             local_distance = distance_from_parent,
             local_angle = angle,
@@ -107,9 +110,13 @@ function systeme.make_corps(global_map_gen,system,parent_name, parent_location, 
             orientation = n_angle,
             magnitude = 1.0,
             label_orientation = 0.15,
-            asteroid_spawn_influence = 1,
-            asteroid_spawn_definitions = asteroid_util.spawn_definitions(asteroid_util.aquilo_solar_system_edge, 0.9)
+            asteroid_spawn_definitions = asteroids_spawn,
+            asteroid_spawn_influence=asteroid_influence,
         }
+
+        if mods["visible-planets"] then
+            vp_add_planets_to_blacklist({edge.name}) 
+        end
         return edge
     end
 end
@@ -119,8 +126,7 @@ function systeme.create_routes_in_system(galaxy_objects)
     for name, system in pairs(galaxy_objects) do
         if name ~= "galaxy_routes" and name ~= "lihop-system-Calidus" then
             if #system.children == 2 then
-                local asteroid_spawn_definitions = routes.asteroids_spawn(system.belt, system.children[1],
-                    system.children[2])
+                --local asteroid_spawn_definitions = asteroids.spawn_connection_inner(system.belt, system.children[1],system.children[2])
                 local route = {
                     type = "space-connection",
                     name = system.children[1].name .. "-to-" .. system.children[2].name,
@@ -128,13 +134,13 @@ function systeme.create_routes_in_system(galaxy_objects)
                     from = system.children[1].name,
                     to = system.children[2].name,
                     order = "[d]",
-                    length = 1000,--40000,
-                    asteroid_spawn_definitions =asteroid_spawn_definitions 
+                    --length = 1000,--40000,
+                    need_spanwdef=true
+                    --asteroid_spawn_definitions =asteroid_spawn_definitions 
                 }
                 table.insert(system.children, route)
             elseif #system.children == 3 then
-                local asteroid_spawn_definitions = routes.asteroids_spawn(system.belt, system.children[2],
-                    system.children[3])
+                --local asteroid_spawn_definitions = asteroids.spawn_connection_inner(system.belt, system.children[2],system.children[3])
                 local route = {
                     type = "space-connection",
                     name = system.children[2].name .. "-to-" .. system.children[3].name,
@@ -142,15 +148,16 @@ function systeme.create_routes_in_system(galaxy_objects)
                     from = system.children[2].name,
                     to = system.children[3].name,
                     order = "[d]",
-                    length = 1000,--40000,
-                    asteroid_spawn_definitions =asteroid_spawn_definitions 
+                    --length = 1000,--40000,
+                    need_spanwdef=true
+                    --asteroid_spawn_definitions =asteroid_spawn_definitions 
                 }
                 table.insert(system.children, route)
             else
                 local system_route = routes.create_system_route(system)
                 --log(serpent.block(system_route))
                 for _, edge in pairs(system_route) do
-                    local asteroid_spawn_definitions = routes.asteroids_spawn(system.belt, edge[1], edge[2])
+                    --local asteroid_spawn_definitions = asteroids.spawn_connection_inner(system.belt, edge[1], edge[2])
                     local route = {
                         type = "space-connection",
                         name = edge[1].name .. "-to-" .. edge[2].name,
@@ -158,8 +165,9 @@ function systeme.create_routes_in_system(galaxy_objects)
                         from = edge[1].name,
                         to = edge[2].name,
                         order = "[d]",
-                        length = 1000,--40000,
-                        asteroid_spawn_definitions =asteroid_spawn_definitions
+                        --length = 1000,--40000,
+                        need_spanwdef=true
+                        --asteroid_spawn_definitions =asteroid_spawn_definitions
                     }
                     table.insert(system.children, route)
                 end
@@ -184,8 +192,9 @@ function systeme.create_routes_in_system(galaxy_objects)
                 from = star,
                 to = nearest_planet,
                 order = "[d]",
-                length = 1000,--20000,
-                asteroid_spawn_definitions =asteroid_spawn_definitions --asteroid_util.spawn_definitions(asteroid_util.gleba_aquilo)
+                --length = 1000,--20000,
+                need_spanwdef=true
+                --asteroid_spawn_definitions =asteroid_spawn_definitions --asteroid_util.spawn_definitions(asteroid_util.gleba_aquilo)
             }
             table.insert(system.children, route)
         end

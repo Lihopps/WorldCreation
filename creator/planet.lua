@@ -3,6 +3,7 @@ local asteroid_util = require("__space-age__.prototypes.planet.asteroid-spawn-de
 local moon=require("creator.moon")
 local map_gen=require("creator.map-gen")
 local util=require("util.util")
+local asteroids=require("creator.asteroids")
 
 local moon_density = { 0, 0.10, 0.25 }
 local robot_cons={1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,3,3,3,4,4,5}
@@ -17,6 +18,7 @@ function corps.make_planet(global_map_gen,system,system_name,backers,gen,distanc
     local magnetic_field=gen:random(5,100)
     local gravity=pressure*robot_comsuption/100
     local magnitude=util.map(gravity,5,250,0.95,1.5)
+    local asteroids_spawn,asteroid_influence=asteroids.spawn_planet(name_gen)
     local planet = {
         local_distance = distance_from_parent,
         local_angle = angle,
@@ -39,7 +41,8 @@ function corps.make_planet(global_map_gen,system,system_name,backers,gen,distanc
         gravity_pull = 10*magnitude,
         solar_power_in_space=map_gen.get_solar_power_in_space(system,distance_from_parent),
         
-        asteroid_spawn_definitions = asteroid_util.spawn_definitions(asteroid_util.nauvis_vulcanus, 0.9),
+        asteroid_spawn_definitions = asteroids_spawn,
+        asteroid_spawn_influence=asteroid_influence,
         
         map_gen_settings = map_gen.tweak(data.raw.planet[name_gen].map_gen_settings),
         surface_properties = {
@@ -60,6 +63,7 @@ function corps.make_planet(global_map_gen,system,system_name,backers,gen,distanc
         --log(serpent.block(galaxy_objects[parent_name]))
         
         local planet_moon = moon.make_moon(global_map_gen,system,planet,system_name,planet.name, { distance = distance, angle = n_angle }, 5, gen:random(),  gen,backers)
+        planet_moon.orbit_distance=orbit_distance
         table.insert(planet.children, planet_moon)
         local route = {
             type = "space-connection",
@@ -68,8 +72,8 @@ function corps.make_planet(global_map_gen,system,system_name,backers,gen,distanc
             order = "[d]",
             from = planet.name,
             to = planet_moon.name,
-            length = 1000,--5000,
-            asteroid_spawn_definitions = asteroid_util.spawn_definitions(asteroid_util.gleba_aquilo)
+            --length = 1000,--5000,
+            need_spanwdef=true
         }
         table.insert(planet.children, route)
     end
@@ -80,6 +84,7 @@ function corps.make_gazeous_planet(global_map_gen,system,system_name,backers,gen
     local name = backers[gen:random(#backers)]
     local name_gen="gazeous"
     local magnitude=gen:random(1,2)
+    local asteroids_spawn,asteroid_influence,spawn_data=asteroids.spawn_star()
     local planet = {
         local_distance = distance_from_parent,
         local_angle = angle,
@@ -103,7 +108,9 @@ function corps.make_gazeous_planet(global_map_gen,system,system_name,backers,gen
         gravity_pull = 10*magnitude,
         solar_power_in_space=map_gen.get_solar_power_in_space(system,distance_from_parent),
         
-        asteroid_spawn_definitions = asteroid_util.spawn_definitions(asteroid_util.nauvis_vulcanus, 0.9),
+        asteroid_spawn_definitions = asteroids_spawn,
+        asteroid_spawn_influence=util.map(magnitude,1,2,0.2,0.4),
+        spawn_data=spawn_data
         
     }
 
@@ -114,6 +121,7 @@ function corps.make_gazeous_planet(global_map_gen,system,system_name,backers,gen
         --log(serpent.block(galaxy_objects[parent_name]))
         
         local planet_moon = moon.make_moon(global_map_gen,system,planet,system_name,planet.name, { distance = distance, angle = n_angle }, 5, gen:random(),  gen,backers)
+        planet_moon.orbit_distance=orbit_distance
         table.insert(planet.children, planet_moon)
         local route = {
             type = "space-connection",
@@ -122,8 +130,8 @@ function corps.make_gazeous_planet(global_map_gen,system,system_name,backers,gen
             order = "[d]",
             from = planet.name,
             to = planet_moon.name,
-            length = 1000,--5000,
-            asteroid_spawn_definitions = asteroid_util.spawn_definitions(asteroid_util.gleba_aquilo)
+            --length = 1000,--5000,
+            need_spanwdef=true
         }
         table.insert(planet.children, route)
     end

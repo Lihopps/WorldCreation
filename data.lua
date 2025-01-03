@@ -1,5 +1,7 @@
 lihop_debug=true
+lihop_speed=true
 
+require("util.randomlua")
 require("creator.noise")
 
 require("categories.group")

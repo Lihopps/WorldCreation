@@ -6,6 +6,7 @@ data:extend({
         enabled = lihop_debug,
         category = "cryogenics",
         main_product="lihop-titan-catalyseur",
+        hidden_in_factoriopedia=true,
         energy_required = 20,
         ingredients =
         {

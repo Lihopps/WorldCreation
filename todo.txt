@@ -1,24 +1,21 @@
 
-new thruster
 le tweak map gen
 ajouter des conditions au recipe
-le asteroids spawn de tout + longueur des trajets
-refaire correctement le hub + rocket + satellite data 
+refaire correctement le hub + rocket
 techno qui increment avec le lunch
-faire que le site de dyson sphere est aleatoire
 bouger le bot dans un autre group
 pipe and silo graphics
 harvester recipe + graphics
 tech tree + discover
 des subgroup ? + orga des new item
 localised (+factoriopedia sim ?)
-hide recipe fluid in fpedia
+
 graphics add multi graphics for all planet / belt
 
 
 
 
-
+Equilibrage sa race !!!!
 
 
 -----------------------
