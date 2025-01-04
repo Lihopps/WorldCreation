@@ -1,5 +1,6 @@
 local util=require("util.util")
 local default_map_gen_settings=require("__base__/prototypes/planet/planet-map-gen")
+local mgu=require("creator.map-gen-util")
 
 local blacklist={
     nauvis=true,
@@ -22,11 +23,106 @@ local blacklist={
 }
 
 local spawn_base={
-    ["vulcanus"]={max=300,min=150,weight=2},
-    ["gleba"]={max=175,min=75,weight=1},
-    ["nauvis"]={max=125,min=25,weight=2},
-    ["fulgora"]={max=125,min=25,weight=1},
-    ["aquilo"]={max=30,min=0,weight=1},
+    ["vulcanus"]={
+        max=300,
+        min=150,
+        weight=2,
+        resource={
+            "iron-ore",
+            "copper-ore",
+            "coal",
+            "stone",
+            "sulfur",
+            "sulfuric_acid_geyser",
+            "tungsten_ore",
+            "calcite",
+            "lihop-titan-ore",
+            "crude-oil"
+        },
+        fluid_tile={
+            "lava",
+            "lava-hot"
+        }
+    },
+    ["gleba"]={
+        max=175,
+        min=75,
+        weight=1,
+        resource={
+            "iron-ore",
+            "copper-ore",
+            "stone",
+            "sulfuric_acid_geyser",
+            "uranium-ore",
+            "crude-oil",
+            "lithium_brine",
+            "fluorine_vent",
+
+        },
+        fluid_tile={
+            "oil-ocean-shallow",
+        }
+    },
+    ["nauvis"]={
+        max=125,
+        min=25,
+        weight=2,
+        resource={
+            "iron-ore",
+            "copper-ore",
+            "coal",
+            "stone",
+            "uranium-ore",
+            "sulfur",
+            "scrap",
+            "calcite",
+            "holmium-ore",
+            "crude-oil"
+        },
+        fluid_tile={
+            "water",
+            "lava"
+        }
+    },
+    ["fulgora"]={
+        max=125,
+        min=25,
+        weight=1,
+        resource={
+            "scrap",
+            "iron-ore",
+            "copper-ore",
+            "holmium-ore",
+            "uranium-ore",
+            "stone",
+            "crude-oil"
+
+        },
+        fluid_tile={
+            "oil-ocean-shallow",
+            "oil-ocean-deep",
+        }
+    },
+    ["aquilo"]={
+        max=30,
+        min=0,
+        weight=1,
+        resource={
+            "lihop-titan-ore",
+            "stone",
+            "sulfur",
+            "lithium_brine",
+            "fluorine_vent",
+            "aquilo_crude_oil"
+        },
+        fluid_tile={
+            "ammoniacal-ocean",
+            "ammoniacal-ocean-2",
+            "water",
+            "oil-ocean-shallow",
+            "oil-ocean-deep",
+        }
+    },
 }
 
 
@@ -154,16 +250,94 @@ function map_gen.clear_and_collect()
     return global_map_gen
 end
 
-function map_gen.tweak(map_gen_settings)
-    local mgs=table.deepcopy(map_gen_settings)
-    mgs.autoplace_settings["entity"].treat_missing_as_default=false
-    if math.random()<0.1 then
-   
-        mgs.autoplace_controls["holmium-ore"]={}
-        mgs.autoplace_settings["entity"]["settings"]["holmium-ore"]={}
-        mgs.autoplace_controls["sulfur"]={}
-        mgs.autoplace_settings["entity"]["settings"]["sulfur"]={}
+function map_gen.tweak(global_map_gen,name_gen,pressure,gravity)
+    local mgs=table.deepcopy(data.raw.planet[name_gen].map_gen_settings)
+    if not mgs then return default_map_gen_settings end
+
+
+    --change elevation calculation
+    if math.random()<0.8 then 
+        local elevation=mgu.get_elevation()
+        mgs.property_expression_names.elevation = elevation[math.random(1,#elevation)]
     end
+
+    
+    local limit=0
+    local new_data=global_map_gen.spawn_data[name_gen]
+    if new_data then
+        --mgu autoplace_controls et settings
+        --pas plus de 3 resources par planete/moon
+        local new_resource=new_data.resource
+        if new_resource then
+            if mgs.autoplace_controls then
+                for name,frs in pairs(table.deepcopy(mgs.autoplace_controls)) do
+                    if math.random()<0.5 then
+                
+                        limit=limit+1
+                        mgs.autoplace_controls[name]=nil
+                        mgs.autoplace_settings["entity"]["settings"][name:gsub("_","-")]=nil
+                        
+                        local new_name=new_resource[math.random(1,#new_resource)]
+                        local spawn_data={
+                            frequency=util.map(math.random(),0,1,0,10),
+                            size=util.map(math.random(),0,1,0,10),
+                            richness=util.map(math.random(),0,1,0,10)
+                        }
+                        mgs.autoplace_controls[new_name]=spawn_data
+                        mgs.autoplace_settings["entity"]["settings"][new_name:gsub("_","-")]=spawn_data
+                    end
+                    if limit>=3 then
+                        break
+                    end
+                end
+            end
+        end
+
+        --fluid dans le autoplace et control
+        local fluids=new_data.fluid_tile
+        for _,tile in pairs(fluids) do
+            if mgs.autoplace_settings["tile"]["settings"][tile] then
+                if math.random()<0.5 then
+                    mgs.autoplace_settings["tile"]["settings"][tile]=nil
+                    local spawn_data={
+                        frequency=util.map(math.random(),0,1,0,10),
+                        size=util.map(math.random(),0,1,0,10),
+                        richness=util.map(math.random(),0,1,0,10)
+                    }
+                    mgs.autoplace_settings["tile"]["settings"][fluids[math.random(1,#fluids)]]=spawn_data
+                end
+            end
+
+        end
+    end
+
+   
+    if math.random()<0.5 then
+        --ennemies
+        mgs=mgu.delete_ennemies(mgs)
+        if math.random()<0.5 then
+            local spawn_data={
+                frequency=util.map(math.random(),0,1,0,10),
+                size=util.map(math.random(),0,1,0,10),
+                richness=util.map(math.random(),0,1,0,10)
+            }
+            if math.random()<0.6 then
+                --type nauvis
+                mgs.autoplace_controls["enemy-base"]=spawn_data
+            else
+                --type gleba
+                mgs.autoplace_controls["gleba_enemy_base"]=spawn_data
+            end
+        else
+            --type vulcanus
+            mgs.territory_settings=table.deepcopy(data.raw.planet["vulcanus"].map_gen_settings.territory_settings)
+
+        end
+    else
+        --pas d'ennemies : il faut tout supprimer
+        mgs=mgu.delete_ennemies(mgs)
+    end
+
 
     return mgs
 end

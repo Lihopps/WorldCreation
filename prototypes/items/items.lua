@@ -93,7 +93,7 @@ data:extend({
         type = "recipe",
         name = "lihop-titan-rod",
         enabled = lihop_debug,
-        category="metallurgy",
+        category="electromagnetics",
         main_product="lihop-titan-rod",
         energy_required = 10,
         ingredients =
@@ -120,8 +120,9 @@ data:extend({
     {
         type = "recipe",
         name = "lihop-titan-plate",
+        main_product="lihop-titan-plate",
         enabled = lihop_debug,
-        category = "electromagnetics",
+        category = "metallurgy",
         energy_required = 2,
         ingredients =
         {
@@ -129,7 +130,8 @@ data:extend({
             { type = "item", name = "lihop-titan-ore-ioning-belt",           amount = 5 },
         },
         results = { 
-            { type = "item", name = "lihop-titan-plate", amount = 1 },
+            { type = "item", name = "lihop-titan-plate", amount = 1,extra_count_fraction=0.1 },
+            { type = "item", name = "lihop-titan-ore", amount = 1,probability=0.85 },
         }
     },
     {

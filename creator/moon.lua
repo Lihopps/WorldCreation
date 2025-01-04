@@ -66,7 +66,7 @@ function corps.make_moon(global_map_gen,system,planet,system_name,parent_name, p
         asteroid_spawn_influence=asteroid_influence,
         spawn_data=spawn_data,
         
-        map_gen_settings = map_gen.tweak(data.raw.planet[name_gen].map_gen_settings),
+        map_gen_settings = map_gen.tweak(global_map_gen,name_gen,pressure,gravity),
         surface_properties = {
           ["day-night-cycle"] = gen:random(10,100) * (24 * hour),
           ["solar-power"] = math.floor(util.constraints(planet.solar_power_in_space-gen:random(50,200),1,10000000)),

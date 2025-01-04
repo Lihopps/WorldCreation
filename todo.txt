@@ -1,5 +1,3 @@
-
-le tweak map gen
 ajouter des conditions au recipe
 refaire correctement le hub + rocket
 techno qui increment avec le lunch
@@ -16,6 +14,17 @@ graphics add multi graphics for all planet / belt
 
 
 Equilibrage sa race !!!!
+
+v0.0.2
+ajout des vers
+changement territory settings
+le tweak map gen
+
+v0.1.0
+
+revoir la size des planets
+le tweak map gen
+
 
 
 -----------------------

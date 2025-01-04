@@ -128,4 +128,66 @@ data:extend({
       --probability_expression = 0,
     }
   ),
+  {
+    type = "autoplace-control",
+    name = "lihop-titan-ore",
+    localised_name = {"", "[item=lihop-titan-ore] ", {"item-name.lihop-titan-ore"}},
+    richness = true,
+    order = "f-b",
+    category = "resource"
+  },
+   {
+    type = "resource",
+    name = "lihop-titan-ore",
+    icon = "__WorldCreation__/graphics/icons/lihop-titan-ore.png",
+    flags = {"placeable-neutral"},
+    order = "a-b-e",
+    tree_removal_probability = 0.7,
+    tree_removal_max_distance = 32 * 32,
+    walking_sound = sounds.ore,
+    driving_sound = stone_driving_sound,
+    minable =
+    {
+      mining_particle = "stone-particle",
+      mining_time = 5,
+      result = "lihop-titan-ore",
+      fluid_amount = 20,
+      required_fluid = "lihop-titan-catalyseur"
+    },
+    collision_box = {{-0.1, -0.1}, {0.1, 0.1}},
+    selection_box = {{-0.5, -0.5}, {0.5, 0.5}},
+    autoplace = resource_autoplace.resource_autoplace_settings
+    {
+      name = "lihop-titan-ore",
+      order = "c",
+      base_density = 0.4,
+      base_spots_per_km2 = 0.7,
+      has_starting_area_placement = false,
+      random_spot_size_minimum = 1,
+      random_spot_size_maximum = 2,
+      regular_rq_factor_multiplier = 0.6
+    },
+    stage_counts = {5000, 3000, 1500, 1100, 7000, 200, 100, 50},
+    --stage_counts = {5000, 1500,  200,  50},
+    stages =
+    {
+      sheet =
+      {
+        filename = "__WorldCreation__/graphics/entity/titan-ore/titan-ore.png",
+        priority = "extra-high",
+        width = 40,
+        height = 40,
+        frame_count = 4,
+        variation_count = 8,
+        scale = 1
+      }
+    },
+    -- effect_animation_period = 5,
+    -- effect_animation_period_deviation = 1,
+    -- effect_darkness_multiplier = 3.6,
+    -- min_effect_alpha = 0.2,
+    -- max_effect_alpha = 0.3,
+    mining_visualisation_tint = {r =0, g = 0, b = 0, a = 0.61}, -- #cfff7fff
+    map_color = {22/255, 22/255, 22/255}
+  },
 })

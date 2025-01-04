@@ -1,5 +1,10 @@
 data:extend({
     {
+        name = "planet_size",
+        type = "noise-expression",
+        expression = "-1"
+    },
+    {
         type = "surface-property",
         name = "size_surface",
         default_value = 90
