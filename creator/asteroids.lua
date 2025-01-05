@@ -1,8 +1,9 @@
 local asteroid_util = require("__space-age__.prototypes.planet.asteroid-spawn-definitions")
 
 
-local belt_multiplier = 3
+local belt_multiplier = 1.2
 local star_multiplier = 0.3
+local star_speed=2*meter/second
 
 --asteroid_util.spawn_definitions(asteroid_util.nauvis_gleba, 0.9),
 local function empty_spawn()
@@ -238,7 +239,7 @@ function asteroid.spawn_star() --et gazeuse
         }
     }
     local spawn = asteroid_util.spawn_definitions(data, 0.1)
-    spawn = tweak(spawn, "speed", 0.3)
+    spawn = tweak(spawn, "speed", star_speed)
     spawn = tweak(spawn, "angle_when_stopped", 1)
     return spawn, 0.3, data
 end

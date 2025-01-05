@@ -29,14 +29,6 @@ data:extend({
     },
     {
         type = "recipe-category",
-        name = "lihop-harvesting-light"
-    },
-    {
-        type = "recipe-category",
-        name = "lihop-harvesting-heavy"
-    },
-    {
-        type = "recipe-category",
-        name = "lihop-harvesting-plasma"
+        name = "lihop-harvesting"
     },
 })

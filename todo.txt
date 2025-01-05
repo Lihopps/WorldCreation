@@ -4,12 +4,14 @@ techno qui increment avec le lunch
 bouger le bot dans un autre group
 pipe and silo graphics
 harvester recipe + graphics
-tech tree + discover
 des subgroup ? + orga des new item
 localised (+factoriopedia sim ?)
-
+harvesting recipe icon
 graphics add multi graphics for all planet / belt
 
+
+
+visible planet tourne pas + taille ?
 
 
 

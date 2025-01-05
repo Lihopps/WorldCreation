@@ -1,60 +1,76 @@
 local util = require("util.util")
-local function on_rocket_launch_ordered(e)
+
+local function clear_cargo(inv)
+    if not inv then return end
+    game.print("Something wrong with cargo !")
+    inv.clear()
+end
+
+local function check_cargo_inv(silo,inv,name)
+    local item = inv[1]
+    if not item.valid_for_read then clear_cargo(inv) end
+    
+     --satellite pour decouverte
+    if item.name=="lihop-satellite" then
+        if string.find(name, "edge") then
+            game.print("lancement sur un edge")
+            game.print(name)
+            local system_name=util.split(name,"-")[5]
+            if system_name then
+                local force=silo.force
+                local techno=prototypes.get_technology_filtered({})["lihop-discovery-lihop-system-"..system_name]
+                if techno then
+                    game.print("prototypes find")
+                    if force.technologies["lihop-rocket-silo"].researched then
+                        force.technologies[techno.name].researched = true
+                        force.print("[technology="..techno.name.."] researched.")
+                    end
+                end
+            end
+        end
+        return
+    end
+
+    --item a ioniser
+    if item.prototype.rocket_launch_products and #item.prototype.rocket_launch_products>0 then 
+        local data = util.split(item.prototype.rocket_launch_products[1].name, "-")
+        if #data > 2 then
+            if string.find(name, "lihopstar") and data[#data - 1] == "ioning" and data[#data] == "star" then
+                return
+            elseif string.find(name, "asteroids_belt") and data[#data - 1] == "ioning" and data[#data] == "belt" then
+                return      
+            else
+                clear_cargo(inv)
+            end
+        end
+    end
+
+    --construction dyson
+    
+
+    --dans le doute on delete
+    clear_cargo(inv)
+end
+
+local function on_rocket_launch_ordered2(e)
     if e.rocket and e.rocket.valid and e.rocket_silo then
-        if e.rocket.cargo_pod and e.rocket_silo.name == "rocket-silo2" then
+        if e.rocket.cargo_pod and e.rocket_silo.name == "wc-rocket-silo" then
             local inv = e.rocket.cargo_pod.get_inventory(defines.inventory.cargo_unit)
             if not inv then return end
-
             local surface = e.rocket_silo.surface
             if surface then
                 local platform = surface.platform
                 if platform then
+                    --plateform donc on check la space_location
                     local sl = platform.space_location
                     if sl then
-                        --game.print("chk1")
-                        local name = sl.name
-                        local item = inv[1]
-                        if item.valid_for_read then
-                            --game.print("chk2")
-                            --game.print(item.name)
-                            if item.prototype.rocket_launch_products then
-                                if item.prototype.rocket_launch_products[1].name== "" then
-                                    -- check qu'on est bien sur le dyson sphere site
-                                else
-                                    local data = util.split(item.prototype.rocket_launch_products[1].name, "-")
-                                    --game.print(serpent.block(data))
-                                    if #data > 2 then
-                                        if data[#data - 1] == "ioning" then
-                                            --game.print("chk3")
-                                            if data[#data] == "star" then
-                                                --game.print("chk4")
-                                                if string.find(name, "lihopstar") then
-                                                    --game.print("chk5")
-                                                    --all good
-                                                    return
-                                                end
-                                            elseif data[#data] == "belt" then
-                                                --game.print("chk6")
-                                                if string.find(name, "asteroids_belt") then
-                                                    --game.print("chk7")
-                                                    --all good
-                                                    return
-                                                end
-                                            end
-                                        end
-                                    end
-                                end
-                            end
-                        end
+                        check_cargo_inv(e.rocket_silo,inv,sl.name)
                     end
+                else
+                    -- sur un surface
+
                 end
             end
-
-            --si on arrive c'est pas bon docn on clear pour cancel la ionisation
-            game.print("Item in cargo can't be ionised hear")
-            inv.clear()
-        else
-            game.print("no cargo pod detected!")
         end
     end
 end
@@ -62,7 +78,7 @@ end
 local rocket = {}
 
 rocket.events = {
-    [defines.events.on_rocket_launch_ordered] = on_rocket_launch_ordered,
+    [defines.events.on_rocket_launch_ordered] = on_rocket_launch_ordered2,
 
 }
 

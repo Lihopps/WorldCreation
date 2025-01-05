@@ -59,27 +59,64 @@ end
 
 --worldCreation_gazeous_field={light={},heavy={}}
 --add harvesting light and heavy recipe and create super barrel
-for type, fluids in pairs(worldCreation_gazeous_field) do
-  for _, fluid in pairs(fluids) do
-    local temp = data.raw["fluid"][fluid].max_temperature or data.raw["fluid"][fluid].default_temperature
+for _, h_fluid in pairs(worldCreation_gazeous_field["heavy"]) do
+  for _, l_fluid in pairs(worldCreation_gazeous_field["light"]) do
+    local h_temp = data.raw["fluid"][h_fluid].max_temperature or data.raw["fluid"][h_fluid].default_temperature
+    local l_temp = data.raw["fluid"][l_fluid].max_temperature or data.raw["fluid"][l_fluid].default_temperature
+    local name="lihop-harvesting-" .. h_fluid.."-"..l_fluid
     data:extend({
       {
         type = "recipe",
-        name = "lihop-harvesting-" .. fluid,
+        name = name,
         enabled = lihop_debug,
         surface_conditions = { { property = "gravity", min = 0, max = 0 } },
-        category = "lihop-harvesting-" .. type,
+        category = "lihop-harvesting",
         energy_required = 2,
         ingredients = {},
-        hidden=true,
-        hidden_in_factoriopedia=true,
-        results = { { type = "fluid", name = fluid, amount = 100, temperature = temp } }
+        subgroup = "fluid-recipes",
+        order = "z",
+        main_product=h_fluid,
+        results = { 
+          { type = "fluid",fluidbox_index=1, name = h_fluid, amount = 100, temperature = h_temp },
+          { type = "fluid",fluidbox_index=2, name = l_fluid, amount = 100, temperature = l_temp }
+        }
       },
     })
-    local fluidproto = data.raw["fluid"][fluid]
-    superbarrel.create_all(fluidproto, temp)
+    
+    table.insert(data.raw.technology["lihop-harvester-l"].effects,{
+        type = "unlock-recipe",
+        recipe = name
+    })
   end
 end
+
+for type,fluids in pairs(worldCreation_gazeous_field) do
+  for _,h_fluid in pairs(fluids) do
+    local fluidproto = data.raw["fluid"][h_fluid]
+    local h_temp = data.raw["fluid"][h_fluid].max_temperature or data.raw["fluid"][h_fluid].default_temperature
+    superbarrel.create_all(fluidproto, h_temp)
+  end
+end
+
+data:extend({
+{
+        type = "recipe",
+        name = "lihop-harvesting-fusion-plasma",
+        enabled = lihop_debug,
+        surface_conditions = { { property = "gravity", min = 0, max = 0 } },
+        category = "lihop-harvesting",
+        energy_required = 2,
+        subgroup = "fluid-recipes",
+        order = "z",
+        ingredients = {},
+        results = { { type = "fluid",fluidbox_index=3, name = "fusion-plasma", amount = 100, temperature = data.raw["fluid"]["fusion-plasma"].max_temperature } }
+},
+})
+
+
+
+
+
 
 
 -- add tile prop for planet size

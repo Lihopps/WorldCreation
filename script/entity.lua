@@ -14,14 +14,10 @@ local function on_entity_build(e)
 	if not constructeur or not constructeur.valid then
 		return
 	end
-	if (entity.name == "lihop-harvester-heavy" or entity.name == "lihop-harvester-light") then
+	if (entity.name == "lihop-harvester") then
         entity.recipe_locked=true
-	elseif (entity.name == "lihop-harvester-plasma") then
-		if not entity.platform then entity.active=false end
-		if not entity.platform.space_location then entity.active=false end
-		if not string.find(entity.platform.space_location.name,"lihopstar-") then entity.active=false end
 	end
-	test.on_entity_build(e)
+	---test.on_entity_build(e)
 end
 
 local function on_cargo_pod_finished_ascending(e)

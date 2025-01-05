@@ -33,6 +33,14 @@ function update.update(galaxy_objects)
     data.raw["space-location"]["shattered-planet"].subgroup = "lihop-system-Calidus"
     data.raw["space-location"]["shattered-planet"].order = "[c]1"
 
+
+    table.insert(data.raw.technology["planet-discovery-vulcanus"].effects,{
+        type = "unlock-space-location",
+        space_location ="lihopstar-Calidus",
+        use_icon_overlay_constant = true
+      }
+    )
+
     local connection = {
         ["nauvis-vulcanus"] = true,
         ["nauvis-gleba"] = true,

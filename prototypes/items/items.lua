@@ -29,7 +29,17 @@ end
 
 
 data:extend({
-
+    {
+        type = "item",
+        name = "lihop-dyson-scaffold-result",
+        icon = "__WorldCreation__/graphics/icons/lihop-dyson-scaffold-result.png",
+        icon_size = 64,
+        subgroup = "extraction-machine",
+        order = "a[items]-c[infinity-miner]",
+        stack_size = 10,
+        weight = 100*kg,
+        spoil_ticks= 60 * second
+    },
     {
         type = "recipe",
         name = "lihop-dyson-scaffold",
@@ -39,16 +49,18 @@ data:extend({
         energy_required = 10,
         ingredients =
         {
-            { type = "item", name = "quantum-processor",      amount = 1 },
-            { type = "item", name = "carbon-fiber",           amount = 2 },
+            { type = "item", name = "quantum-processor",      amount = 3 },
+            { type = "item", name = "carbon-fiber",           amount = 5 },
             { type = "item", name = "space-platform-foundation", amount = 10 },
-            { type = "item", name = "lihop-titan-mesh-ioning-star",           amount = 1 },
-
+            { type = "item", name = "lihop-titan-mesh-ioning-star",           amount = 2 },
+            { type = "item", name = "lihop-electronic-circuit",           amount = 10 },
         },
         results = { 
             { type = "item", name = "lihop-dyson-scaffold", amount = 1 },
             { type = "item", name = "scrap", amount = 10 }
-            }
+        },
+        send_to_orbit_mode="automated",
+        rocket_launch_products= {{ type = "item", name = "lihop-dyson-scaffold-result",      amount = 1 }},
     },
     {
         type = "item",
@@ -201,14 +213,14 @@ data:extend({
         icon = "__WorldCreation__/graphics/icons/rocket.png",
         ingredients =
         {
-            {type = "item", name = "processing-unit", amount = 50},
-            {type = "item", name = "low-density-structure", amount = 50},
-            {type = "item", name = "rocket-fuel", amount = 50}
+            {type = "item", name = "processing-unit", amount = 25},
+            {type = "item", name = "low-density-structure", amount = 25},
+            {type = "item", name = "rocket-fuel", amount = 25}
         },
 
         results = { 
             { type = "item", name = "lihop-rocket", amount = 1 },
-        }
+        },
     },
     {
         type = "item",
@@ -239,6 +251,58 @@ data:extend({
             { type = "item", name = "rocket-part", amount = 50 },
         }
     },
+-------------------------------------------------------------------------------------------------------------
+------------------------------ satellite ------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------
+    {
+    type = "item",
+    name = "lihop-satellite",
+    icon = "__base__/graphics/icons/satellite.png",
+    subgroup = "space-related",
+    order = "d[rocket-parts]-e[satellite]",
+    stack_size = 1,
+    weight = 1 * tons,
+    send_to_orbit_mode = "automated",
+    rocket_launch_products= {{ type = "item", name = "lihop-electronic-circuit",      amount = 100 }},
+  },
+  {
+        type = "recipe",
+        name = "lihop-satellite",
+        enabled = lihop_debug,
+        --hidden=true,
+        --hidden_in_factoriopedia=true,
+        energy_required = 10,
+        ingredients =
+        {
+            {type = "item", name = "processing-unit", amount =10},
+           
+        },
+        results = { 
+            { type = "item", name = "lihop-satellite", amount = 50 },
+        },
+        
+    },
+     {
+        type = "item",
+        name = "lihop-electronic-circuit",
+        icon = "__WorldCreation__/graphics/icons/electronic-circuit.png",
+        icon_size = 64,
+        subgroup = "extraction-machine",
+        order = "a[items]-c[infinity-miner]",
+        stack_size = 100,
+        weight = 0.2*kg
+    },
+    {
+    type = "item",
+    name = "lihop-satellite-dummy",
+    icon = "__base__/graphics/icons/satellite.png",
+    subgroup = "space-related",
+    order = "d[rocket-parts]-e[satellite]",
+    hidden=true,
+    hidden_in_factoriopedia=true,
+    stack_size = 1,
+    weight = 1 * tons,
+  },
 
 })
 
